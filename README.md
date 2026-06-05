@@ -6,15 +6,15 @@ Dự án cung cấp thư viện Python kết nối trực tiếp đến API CapC
 
 ## 📂 Cấu Trúc Dự Án
 
-*   **Dành cho macOS (Thư mục gốc):**
-    *   [capcut_tts_ctypes.py](file:///Users/admin/Downloads/capcut_new/capcut_tts_ctypes.py): Kịch bản chính trên macOS, sử dụng ctypes để gọi và biên dịch `cronet_helper.cpp` thành binary hỗ trợ gửi request qua Cronet.
-    *   [config.py](file:///Users/admin/Downloads/capcut_new/config.py): File cấu hình tập trung chứa thông tin thiết bị, ứng dụng, và giọng đọc (Single Source of Truth).
-    *   [cronet_helper.cpp](file:///Users/admin/Downloads/capcut_new/cronet_helper.cpp): Cầu nối C++ gọi thư viện mạng `libsscronet` của CapCut macOS.
-*   **Dành cho Windows (Thư mục `capcuttts/`):**
-    *   [capcuttts/capcut_tts_ctypes.py](file:///Users/admin/Downloads/capcut_new/capcuttts/capcut_tts_ctypes.py): Kịch bản chính chạy trên Windows, tương thích hoàn toàn cấu hình.
-    *   [capcuttts/config.py](file:///Users/admin/Downloads/capcut_new/capcuttts/config.py): File cấu hình tập trung cho Windows.
-    *   [capcuttts/cronet_client.py](file:///Users/admin/Downloads/capcut_new/capcuttts/cronet_client.py): Wrapper ctypes kết nối tới DLL của Cronet trên Windows.
-    *   [capcuttts/cronet_helper_dll.cpp](file:///Users/admin/Downloads/capcut_new/capcuttts/cronet_helper_dll.cpp): File nguồn C++ biên dịch ra DLL trên Windows.
+*   **Dành cho macOS (Thư mục `capcut_macos/`):**
+    *   [capcut_macos/capcut_tts_ctypes.py](file:///Users/admin/Downloads/capcut_new/capcut_macos/capcut_tts_ctypes.py): Kịch bản chính trên macOS, sử dụng ctypes để gọi và biên dịch `cronet_helper.cpp` thành binary hỗ trợ gửi request qua Cronet.
+    *   [capcut_macos/config.py](file:///Users/admin/Downloads/capcut_new/capcut_macos/config.py): File cấu hình tập trung chứa thông tin thiết bị, ứng dụng, và giọng đọc (Single Source of Truth).
+    *   [capcut_macos/cronet_helper.cpp](file:///Users/admin/Downloads/capcut_new/capcut_macos/cronet_helper.cpp): Cầu nối C++ gọi thư viện mạng `libsscronet` của CapCut macOS.
+*   **Dành cho Windows (Thư mục `capcut_windows/`):**
+    *   [capcut_windows/capcut_tts_ctypes.py](file:///Users/admin/Downloads/capcut_new/capcut_windows/capcut_tts_ctypes.py): Kịch bản chính chạy trên Windows, tương thích hoàn toàn cấu hình.
+    *   [capcut_windows/config.py](file:///Users/admin/Downloads/capcut_new/capcut_windows/config.py): File cấu hình tập trung cho Windows.
+    *   [capcut_windows/cronet_client.py](file:///Users/admin/Downloads/capcut_new/capcut_windows/cronet_client.py): Wrapper ctypes kết nối tới DLL của Cronet trên Windows.
+    *   [capcut_windows/cronet_helper_dll.cpp](file:///Users/admin/Downloads/capcut_new/capcut_windows/cronet_helper_dll.cpp): File nguồn C++ biên dịch ra DLL trên Windows.
 
 ---
 
@@ -90,16 +90,20 @@ Nhấp vào gói tin POST được bắt, chọn tab **JSON / Raw Body** để x
 
 ### Trên macOS:
 1. Đảm bảo bạn đã cài đặt Python 3 và Xcode Command Line Tools (để có `clang++`).
-2. Mở Terminal tại thư mục dự án và chạy:
+2. Di chuyển vào thư mục `capcut_macos`:
+   ```bash
+   cd capcut_macos
+   ```
+3. Chạy kịch bản:
    ```bash
    python3 capcut_tts_ctypes.py "Nội dung văn bản cần đọc"
    ```
    Kịch bản sẽ tự động biên dịch `cronet_helper.cpp` nếu chưa có file thực thi, thực hiện ký payload và tải file audio TTS về.
 
 ### Trên Windows:
-1. Di chuyển vào thư mục `capcuttts`:
+1. Di chuyển vào thư mục `capcut_windows`:
    ```cmd
-   cd capcuttts
+   cd capcut_windows
    ```
 2. Chạy file batch `build.bat` để biên dịch DLL trợ giúp (yêu cầu bộ biên dịch MSVC/g++).
 3. Chạy lệnh:
