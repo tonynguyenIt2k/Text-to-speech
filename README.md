@@ -1,126 +1,457 @@
-# 🎙️ CapCut TTS API Client (Bilingual: VI / EN)
+# CapCut Common Task Client
 
-> **🇻🇳 Việt Nam:** Dự án mã nguồn mở cung cấp giải pháp chuyển đổi văn bản thành giọng nói (TTS) thông qua kết nối trực tiếp tới API ẩn của CapCut Desktop mà không cần giao diện người dùng. Hỗ trợ đầy đủ macOS và Windows.
->
-> **🇬🇧 English:** A high-performance Python/C++ wrapper connecting directly to CapCut Desktop's internal APIs for Text-to-Speech (TTS) synthesis without spawning a GUI. Fully compatible with both macOS and Windows.
+Pure Python command-line client for CapCut common task workflows:
 
----
+- Text to Speech (TTS)
+- Speech to Text / subtitle recognition (STT)
+- Audio upload for STT
+- Task polling for TTS and STT
 
-## 🗺️ 1. File Structure & Roles / Cấu Trúc File & Chức Năng
+This client does not call native libraries, does not load `.dylib` files, does not use C++ helpers, and does not use `ctypes`. Request construction, payload signing, upload signing, and VOD authorization are implemented in Python.
 
-Here is the breakdown of the project layout and the function of each file:
-Dưới đây là chi tiết sơ đồ thư mục và vai trò cụ thể của từng tệp tin:
+> Use this tool only with accounts, devices, sessions, and media that you are authorized to use.
 
-### 🍏 macOS Component (`capcut_macos/`)
-*   **[capcut_macos/capcut_tts_ctypes.py](file:///Users/admin/Downloads/capcut_new/capcut_macos/capcut_tts_ctypes.py)**
-    *   🇻🇳 Kịch bản Python chính cho macOS. Chịu trách nhiệm khởi tạo payload SSML, ký mã hóa (signing) bằng RSA, gọi thực thi binary `cronet_helper` để gửi yêu cầu và thực hiện polling tải audio.
-    *   🇬🇧 The main Python orchestrator for macOS. Formulates the SSML payload, generates the RSA signature, triggers the `cronet_helper` binary, and polls the server for completion.
-*   **[capcut_macos/config.py](file:///Users/admin/Downloads/capcut_new/capcut_macos/config.py)**
-    *   🇻🇳 Lưu trữ cấu hình tập trung (App ID, Device ID, tên giọng nói, ngôn ngữ). Điểm cấu hình duy nhất trên macOS.
-    *   🇬🇧 Single source of truth config file containing device metadata, app versioning, and default voice profiles on macOS.
-*   **[capcut_macos/cronet_helper.cpp](file:///Users/admin/Downloads/capcut_new/capcut_macos/cronet_helper.cpp)**
-    *   🇻🇳 Mã nguồn C++ liên kết động với `libsscronet.dylib` của CapCut macOS để xử lý luồng mạng bất tuần tự thông qua CFRunLoop.
-    *   🇬🇧 Native C++ source using dynamic loading (`dlopen`/`dlsym`) for `libsscronet.dylib` and executing asynchronous requests inside a `CFRunLoop`.
+## Donate
 
----
+If this project helps your work, you can support development with USDT on TRC20:
 
-### 🔑 Windows Component (`capcut_windows/`)
-*   **[capcut_windows/capcut_tts_ctypes.py](file:///Users/admin/Downloads/capcut_new/capcut_windows/capcut_tts_ctypes.py)**
-    *   🇻🇳 Kịch bản Python chạy trên Windows. Giao tiếp trực tiếp với `cronet_helper.dll` thông qua ctypes để thực hiện gửi request mạng Cronet.
-    *   🇬🇧 The main Python client on Windows, interfacing directly with compiled helper DLL using Python's `ctypes`.
-*   **[capcut_windows/config.py](file:///Users/admin/Downloads/capcut_new/capcut_windows/config.py)**
-    *   🇻🇳 Cấu hình hệ thống Windows bao gồm tham số thiết bị và đường dẫn tuyệt đối dẫn tới `sscronet.dll`.
-    *   🇬🇧 Config manager containing device values and absolute path to the local CapCut `sscronet.dll` library.
-*   **[capcut_windows/cronet_client.py](file:///Users/admin/Downloads/capcut_new/capcut_windows/cronet_client.py)**
-    *   🇻🇳 Thư viện Python ctypes wrapper nạp trực tiếp `cronet_helper.dll` và thực thi truy xuất mạng.
-    *   🇬🇧 A thin Python ctypes wrapper managing memory mapping and exports of `cronet_helper.dll`.
-*   **[capcut_windows/cronet_helper_dll.cpp](file:///Users/admin/Downloads/capcut_new/capcut_windows/cronet_helper_dll.cpp)**
-    *   🇻🇳 Mã nguồn C++ biên dịch thành thư viện động DLL trên Windows sử dụng Win32 API và Cronet engine.
-    *   🇬🇧 C++ DLL source designed for Windows, wrapping Cronet calls with custom export interfaces.
-*   **[capcut_windows/build.bat](file:///Users/admin/Downloads/capcut_new/capcut_windows/build.bat)**
-    *   🇻🇳 Script tự động biên dịch C++ Windows qua trình biên dịch MSVC (cl.exe).
-    *   🇬🇧 Automated batch build file invoking Microsoft Visual C++ Compiler (`cl.exe`).
+```text
+TL4sPkfSTVnmneKvvuCfa2wSDnADjxDqYV
+```
+
+Network: TRC20
 
 ---
 
-## 🛠️ 2. Build Instructions / Hướng Dẫn Biên Dịch C++
+## English
 
-### 🍏 On macOS:
-> [!NOTE]
-> Kịch bản Python `capcut_tts_ctypes.py` sẽ **tự động kiểm tra và biên dịch** mã nguồn C++ tại lần chạy đầu tiên. Nếu muốn biên dịch thủ công, sử dụng lệnh bên dưới.
->
-> The Python driver automatically compiles this on the fly. To compile manually, run the following:
+### Features
+
+- Builds CapCut `/lv/v1/common_task/new` requests for TTS and STT.
+- Uploads local audio/video files to the CapCut text-recognition VOD space before STT.
+- Polls `/lv/v1/common_task/query` for task results.
+- Generates request body hashes with `x-ss-stub`.
+- Generates the common `sign` header used by the captured CapCut flow.
+- Generates the TTS inner payload RSA signature in pure Python.
+- Generates AWS SigV4 authorization for `ApplyUploadInner` and `CommitUploadInner` in pure Python.
+- Supports `--device-json` overrides for device/session values.
+
+### Requirements
+
+- Python 3.9+
+- `requests`
+
+Install dependency:
 
 ```bash
-cd capcut_macos
-clang++ -O3 -std=c++17 -framework CoreFoundation -framework Foundation cronet_helper.cpp -o cronet_helper
+python3 -m pip install requests
 ```
 
-### 🔑 On Windows:
-1. Mở công cụ **Developer Command Prompt for VS** (Để nạp các biến môi trường MSVC `cl.exe`).
-2. Di chuyển tới thư mục `capcut_windows` và chạy kịch bản biên dịch:
-```cmd
-cd capcut_windows
-build.bat
-```
-*Trình biên dịch sẽ tạo ra file thư viện động `cronet_helper.dll`.*
+### Device Configuration
 
----
+The script includes a default CapCut desktop device profile in `DEFAULT_DEVICE`. You can override any field by passing a JSON file:
 
-## 📂 3. Locating Cronet Engine / Hướng Dẫn Tìm Đường Dẫn Thư Viện Mạng
-
-> [!WARNING]
-> CapCut chặn hầu hết các thư viện HTTP thông thường (`requests`, `urllib`). Bạn bắt buộc phải chỉ định đúng đường dẫn thư viện Cronet của CapCut để vượt qua tường lửa.
->
-> CapCut blocks standard Python HTTP clients. You must link against CapCut's authentic Cronet network library.
-
-#### 🍏 macOS (`libsscronet.dylib`):
-*   **Default Path / Đường dẫn mặc định:** `/Applications/CapCut.app/Contents/Frameworks/libsscronet.dylib`
-*   *Nếu CapCut được cài đặt ở thư mục ứng dụng mặc định, hệ thống sẽ tự nạp thành công mà không cần cấu hình thêm.*
-
-#### 🔑 Windows (`sscronet.dll`):
-1. Nhấn tổ hợp `Windows + R`, gõ `%localappdata%\CapCut\Apps` và bấm `Enter`.
-2. Mở thư mục mang tên phiên bản hiện tại (Ví dụ: `8.7.0.3685`).
-3. Tìm file `sscronet.dll`, giữ phím `Shift` + chuột phải và chọn **Copy as path** (Sao chép đường dẫn).
-4. Dán đường dẫn này vào biến `SSCRONET_DLL` trong tệp [capcut_windows/config.py](file:///Users/admin/Downloads/capcut_new/capcut_windows/config.py) dưới dạng raw string:
-   `SSCRONET_DLL = r"C:\Users\<Tên_User>\AppData\Local\CapCut\Apps\8.7.0.3685\sscronet.dll"`
-
----
-
-## 🔍 4. Proxy Capture & Reversing / Hướng Dẫn Bắt Gói Tin & Reverse API
-
-Để lấy chính xác `voice name` và `resource_id` cho các giọng đọc độc quyền, He cần bắt gói tin HTTPS.
-
-### Steps / Các Bước Thực Hiện:
-1. **Setup Proxy / Cài đặt proxy:** Cài đặt công cụ phân tích mạng (Proxyman / Charles Proxy / Fiddler). Cài đặt chứng chỉ Root để bật giải mã HTTPS (SSL Decryption).
-2. **Trigger Request / Gửi gói tin:** Mở CapCut Desktop và thực hiện thao tác Thêm Phụ Đề (Auto Captions) hoặc Đọc Văn Bản (Text-to-Speech).
-3. **Capture Target URL / Lọc gói tin:** Tìm URL khớp với định dạng:
-   ```http
-   https://editor-api-sg.capcutapi.com/lv/v1/common_task/new?app_name=CapCut&device_type=MacBookPro17,1...
-   ```
-4. **Extract Parameter / Trích xuất giá trị:**
-   *   Mở tab JSON Body của gói tin vừa bắt. Tìm trường cấu trúc dữ liệu `ssml`.
-   *   Trích xuất tên giọng đọc tại thuộc tính `name` (Ví dụ: `DiT_zh_male_xionger`) và mã giọng đọc tại `resource_id` (Ví dụ: `7564318793716059409`).
-   *   Thay các giá trị này vào file `config.py` để sử dụng giọng đọc đó.
-
-### Reversing Mechanism / Cơ Chế Ký Xác Thực:
-*   **x-ss-stub / x-ss-stub Header:** MD5 Hash của toàn bộ Request JSON Body.
-*   **Sign Header:** Sử dụng chuỗi salt đặc trưng được băm MD5 để xác thực request:
-    `MD5("9e2c|" + url_path_suffix + "|3|" + app_version + "|" + device_time + "|" + device_id + "|11ac")`
-*   **Body Sign:** SSML được mã hóa bất đối xứng RSA-PKCS1v15 từ mã hash MD5 của cấu trúc SSML kèm các giá trị ID thiết bị để đảm bảo tính chống can thiệp.
-
----
-
-## 🚀 5. How to Run / Cách Vận Hành Dự Án
-
-### 🍏 macOS:
 ```bash
-cd capcut_macos
-python3 capcut_tts_ctypes.py "Chào anh, đây là giọng nói thử nghiệm."
+python3 capcut_common_task_client.py tts-new \
+  --device-json device.json \
+  --text "Hello world"
 ```
 
-### 🔑 Windows:
-```cmd
-cd capcut_windows
-python capcut_tts_ctypes.py "Chào anh, đây là giọng nói thử nghiệm."
+Example `device.json`:
+
+```json
+{
+  "device_id": "7647183892936328721",
+  "iid": "7647185302080423697",
+  "tdid": "7647183892936328721",
+  "appvr": "8.7.0",
+  "version_name": "8.7.0",
+  "version_code": "8.7.0",
+  "lan": "vi-VN",
+  "loc": "VN",
+  "region": "VN"
+}
 ```
+
+### Commands
+
+#### 1. Create a TTS Task
+
+```bash
+python3 capcut_common_task_client.py tts-new \
+  --text "Hello world"
+```
+
+Useful voice options:
+
+```bash
+python3 capcut_common_task_client.py tts-new \
+  --text "Hello world" \
+  --voice BV074_streaming \
+  --resource-id 7102355709945188865 \
+  --rate 1.0
+```
+
+The response contains a task `id` and `token`:
+
+```json
+{
+  "data": {
+    "tasks": [
+      {
+        "id": "...",
+        "status": "queueing",
+        "token": "..."
+      }
+    ]
+  }
+}
+```
+
+#### 2. Query a TTS Task
+
+```bash
+python3 capcut_common_task_client.py tts-query \
+  --task-id "TASK_ID" \
+  --token "TOKEN"
+```
+
+#### 3. Upload an Audio/Video File
+
+```bash
+python3 capcut_common_task_client.py upload-audio \
+  --audio-file 1.mp4
+```
+
+Example output:
+
+```json
+{
+  "vid": "v10639g5000...",
+  "md5": "6171f4249ae1561cab6c4e4f1e1d71fa",
+  "local_md5": "6171f4249ae1561cab6c4e4f1e1d71fa",
+  "duration_ms": 1008,
+  "format": "mp3",
+  "size": 20160,
+  "file_type": "audio",
+  "store_uri": "tos-alisg-v-37d494-sg/..."
+}
+```
+
+#### 4. Create an STT Task from an Uploaded File
+
+Use this when you already have `vid` and `md5` from `upload-audio`:
+
+```bash
+python3 capcut_common_task_client.py stt-new \
+  --audio-vid "VID_FROM_UPLOAD" \
+  --audio-md5 "MD5_FROM_UPLOAD" \
+  --duration-ms 1008 \
+  --language vi-VN
+```
+
+#### 5. Upload and Create STT in One Command
+
+```bash
+python3 capcut_common_task_client.py stt-file \
+  --audio-file 1.mp4 \
+  --language vi-VN
+```
+
+The command first uploads the media, then submits the STT task. The response contains a task `id` and `token`.
+
+#### 6. Query an STT Task
+
+```bash
+python3 capcut_common_task_client.py stt-query \
+  --task-id "TASK_ID" \
+  --token "TOKEN"
+```
+
+#### 7. Save Response to a File
+
+```bash
+python3 capcut_common_task_client.py stt-query \
+  --task-id "TASK_ID" \
+  --token "TOKEN" \
+  --out response.json
+```
+
+#### 8. Preview a Request Without Calling the API
+
+```bash
+python3 capcut_common_task_client.py stt-new \
+  --audio-vid "VID_FROM_UPLOAD" \
+  --audio-md5 "MD5_FROM_UPLOAD" \
+  --duration-ms 1000 \
+  --language vi-VN \
+  --dry-run
+```
+
+### How It Works
+
+#### TTS Flow
+
+1. Build SSML from `--text`, `--voice`, `--resource-id`, and `--rate`.
+2. Create the inner TTS payload.
+3. Generate the payload `sign` using RSA PKCS#1 v1.5 in pure Python.
+4. Wrap the payload in a CapCut common task body.
+5. Generate `x-ss-stub`, `x-khronos`, `device-time`, and request `sign`.
+6. POST to `/lv/v1/common_task/new`.
+7. Poll `/lv/v1/common_task/query` with the returned task `id` and `token`.
+
+#### STT File Flow
+
+1. Call `/lv/v1/upload_sign` to obtain temporary VOD credentials.
+2. Sign `ApplyUploadInner` with AWS SigV4.
+3. Upload the media bytes to the returned VOD upload host.
+4. Finish the upload with the part CRC32.
+5. Sign and call `CommitUploadInner` to receive the media `vid`, `md5`, and duration.
+6. Submit `/lv/v1/common_task/new` with `req_key=cc_audio_subtitle_asr`.
+7. Poll `/lv/v1/common_task/query` until the task succeeds.
+
+### Where Are the Subtitles?
+
+STT query responses store subtitles inside:
+
+```text
+data.tasks[0].payload
+```
+
+`payload` is itself a JSON string. Parse it, then read:
+
+```text
+payload.utterances[].text
+payload.utterances[].start_time
+payload.utterances[].end_time
+payload.utterances[].words[]
+```
+
+Quick extractor:
+
+```bash
+python3 - <<'PY'
+import json
+
+data = json.load(open("response.json", encoding="utf-8"))
+payload = json.loads(data["data"]["tasks"][0]["payload"])
+
+for item in payload.get("utterances", []):
+    print(f'[{item["start_time"]}ms -> {item["end_time"]}ms] {item["text"]}')
+PY
+```
+
+### Notes
+
+- `upload-audio` accepts media files such as `.mp3`, `.m4a`, and `.mp4` when CapCut's upload service can parse the media.
+- `duration_ms` is read from the upload commit result when using `stt-file`.
+- The removed device-generation flow is intentionally not part of this client. Device identity should be configured explicitly through `DEFAULT_DEVICE` or `--device-json`.
+
+---
+
+## Tiếng Việt
+
+### Donate / Ủng hộ
+
+Nếu project hữu ích cho công việc của bạn, có thể ủng hộ bằng USDT mạng TRC20:
+
+```text
+TL4sPkfSTVnmneKvvuCfa2wSDnADjxDqYV
+```
+
+Network: TRC20
+
+### Tính năng
+
+- Tạo request CapCut `/lv/v1/common_task/new` cho TTS và STT.
+- Upload file audio/video local lên VOD space dùng cho nhận diện phụ đề.
+- Query `/lv/v1/common_task/query` để lấy kết quả task.
+- Tạo `x-ss-stub` bằng MD5 của body.
+- Tạo header `sign` theo flow CapCut đã phân tích.
+- Tạo chữ ký RSA cho payload TTS bằng Python thuần.
+- Tạo AWS SigV4 cho `ApplyUploadInner` và `CommitUploadInner` bằng Python thuần.
+- Hỗ trợ override cấu hình thiết bị/session bằng `--device-json`.
+
+### Yêu cầu
+
+- Python 3.9+
+- `requests`
+
+Cài dependency:
+
+```bash
+python3 -m pip install requests
+```
+
+### Cấu hình thiết bị
+
+Script có sẵn profile thiết bị CapCut desktop trong `DEFAULT_DEVICE`. Có thể override bằng file JSON:
+
+```bash
+python3 capcut_common_task_client.py tts-new \
+  --device-json device.json \
+  --text "Xin chào"
+```
+
+Ví dụ `device.json`:
+
+```json
+{
+  "device_id": "7647183892936328721",
+  "iid": "7647185302080423697",
+  "tdid": "7647183892936328721",
+  "appvr": "8.7.0",
+  "version_name": "8.7.0",
+  "version_code": "8.7.0",
+  "lan": "vi-VN",
+  "loc": "VN",
+  "region": "VN"
+}
+```
+
+### Cách dùng
+
+#### 1. Tạo task TTS
+
+```bash
+python3 capcut_common_task_client.py tts-new \
+  --text "Xin chào"
+```
+
+Tuỳ chỉnh giọng đọc:
+
+```bash
+python3 capcut_common_task_client.py tts-new \
+  --text "Xin chào" \
+  --voice BV074_streaming \
+  --resource-id 7102355709945188865 \
+  --rate 1.0
+```
+
+Response sẽ có `id` và `token` của task.
+
+#### 2. Query task TTS
+
+```bash
+python3 capcut_common_task_client.py tts-query \
+  --task-id "TASK_ID" \
+  --token "TOKEN"
+```
+
+#### 3. Upload file audio/video
+
+```bash
+python3 capcut_common_task_client.py upload-audio \
+  --audio-file 1.mp4
+```
+
+Kết quả trả về gồm `vid`, `md5`, `duration_ms`, `format`, `size`, `file_type`, và `store_uri`.
+
+#### 4. Tạo task STT từ file đã upload
+
+Khi đã có `vid` và `md5`:
+
+```bash
+python3 capcut_common_task_client.py stt-new \
+  --audio-vid "VID_FROM_UPLOAD" \
+  --audio-md5 "MD5_FROM_UPLOAD" \
+  --duration-ms 1008 \
+  --language vi-VN
+```
+
+#### 5. Upload rồi tạo STT bằng một lệnh
+
+```bash
+python3 capcut_common_task_client.py stt-file \
+  --audio-file 1.mp4 \
+  --language vi-VN
+```
+
+Lệnh này upload file trước, lấy `vid/md5/duration_ms`, rồi tự submit task STT.
+
+#### 6. Query task STT
+
+```bash
+python3 capcut_common_task_client.py stt-query \
+  --task-id "TASK_ID" \
+  --token "TOKEN"
+```
+
+#### 7. Lưu response ra file
+
+```bash
+python3 capcut_common_task_client.py stt-query \
+  --task-id "TASK_ID" \
+  --token "TOKEN" \
+  --out response.json
+```
+
+#### 8. Xem request mà không gọi API
+
+```bash
+python3 capcut_common_task_client.py stt-new \
+  --audio-vid "VID_FROM_UPLOAD" \
+  --audio-md5 "MD5_FROM_UPLOAD" \
+  --duration-ms 1000 \
+  --language vi-VN \
+  --dry-run
+```
+
+### Cách thức hoạt động
+
+#### Flow TTS
+
+1. Tạo SSML từ `--text`, `--voice`, `--resource-id`, và `--rate`.
+2. Tạo payload TTS bên trong.
+3. Ký payload bằng RSA PKCS#1 v1.5 thuần Python.
+4. Đóng payload vào body common task.
+5. Tạo `x-ss-stub`, `x-khronos`, `device-time`, và header `sign`.
+6. POST tới `/lv/v1/common_task/new`.
+7. Query `/lv/v1/common_task/query` bằng `task_id` và `token`.
+
+#### Flow STT từ file
+
+1. Gọi `/lv/v1/upload_sign` để lấy credential VOD tạm thời.
+2. Ký `ApplyUploadInner` bằng AWS SigV4.
+3. Upload bytes của file lên VOD upload host.
+4. Finish upload bằng CRC32 của part.
+5. Ký và gọi `CommitUploadInner` để lấy `vid`, `md5`, và duration.
+6. Submit `/lv/v1/common_task/new` với `req_key=cc_audio_subtitle_asr`.
+7. Query `/lv/v1/common_task/query` đến khi task thành công.
+
+### Phụ đề nằm ở đâu?
+
+Response STT chứa phụ đề trong:
+
+```text
+data.tasks[0].payload
+```
+
+`payload` là JSON string. Parse string này rồi đọc:
+
+```text
+payload.utterances[].text
+payload.utterances[].start_time
+payload.utterances[].end_time
+payload.utterances[].words[]
+```
+
+Trích phụ đề nhanh:
+
+```bash
+python3 - <<'PY'
+import json
+
+data = json.load(open("response.json", encoding="utf-8"))
+payload = json.loads(data["data"]["tasks"][0]["payload"])
+
+for item in payload.get("utterances", []):
+    print(f'[{item["start_time"]}ms -> {item["end_time"]}ms] {item["text"]}')
+PY
+```
+
+### Ghi chú
+
+- `upload-audio` có thể dùng với `.mp3`, `.m4a`, `.mp4` nếu dịch vụ upload của CapCut đọc được media.
+- Với `stt-file`, `duration_ms` được lấy tự động từ kết quả commit upload.
+- Flow tạo thiết bị tự động đã bị loại bỏ. Cấu hình thiết bị nên được khai báo rõ bằng `DEFAULT_DEVICE` hoặc `--device-json`.
