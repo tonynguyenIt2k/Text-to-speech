@@ -10,6 +10,7 @@ from typing import Optional, List
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import requests
 from urllib.parse import urlencode
@@ -29,6 +30,15 @@ app = FastAPI(
     title="CapCut TTS & STT API Server",
     description="A modern API wrapper around CapCut's internal TTS and STT engine.",
     version="1.0.0"
+)
+
+# Enable CORS for cross-origin requests (GitHub Pages → HF Spaces)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Load voices configuration
