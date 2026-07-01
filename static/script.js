@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let apiBaseUrl = localStorage.getItem("api_base_url");
     if (apiBaseUrl === null) {
         const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-        apiBaseUrl = isLocal ? "" : "http://localhost:8000";
+        apiBaseUrl = isLocal ? "" : "https://tony2k-ai-voice-studio.hf.space";
     }
 
     function getApiUrl(path) {
