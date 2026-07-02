@@ -6,8 +6,9 @@ import json
 import logging
 import shutil
 import tempfile
+import re
 from typing import Optional, List
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, BackgroundTasks
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, BackgroundTasks, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,7 +30,7 @@ logger = logging.getLogger("capcut-api-server")
 app = FastAPI(
     title="CapCut TTS & STT API Server",
     description="A modern API wrapper around CapCut's internal TTS and STT engine.",
-    version="1.0.0"
+    version="1.1.0"
 )
 
 # Enable CORS for cross-origin requests (GitHub Pages → HF Spaces)
@@ -40,6 +41,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Directory for storing merged audio files
+AUDIO_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "audio_output")
+os.makedirs(AUDIO_OUTPUT_DIR, exist_ok=True)
 
 # Load voices configuration
 VOICES_FILE = os.path.join(os.path.dirname(__file__), "Voice.json")
@@ -71,24 +76,208 @@ def generate_fresh_device() -> dict:
     device["tdid"] = dev_id
     return device
 
-# API models
+# ─── Text Chunking for Long TTS ──────────────────────────────────────────────
+# CapCut TTS has a ~280 character limit per request.
+# Split long texts at sentence boundaries to stay within the limit.
+TTS_CHAR_LIMIT = 280
+
+def split_text_into_chunks(text: str, max_chars: int = TTS_CHAR_LIMIT) -> List[str]:
+    """
+    Split long text into chunks that fit within CapCut's character limit.
+    Splits at sentence boundaries (., !, ?, newlines) first, then falls back
+    to splitting at commas/semicolons, and finally at word boundaries.
+    """
+    text = text.strip()
+    if len(text) <= max_chars:
+        return [text]
+
+    # Split into sentences first
+    # This regex splits after sentence-ending punctuation followed by whitespace
+    sentences = re.split(r'(?<=[.!?。！？\n])\s*', text)
+    # Filter out empty strings
+    sentences = [s.strip() for s in sentences if s.strip()]
+
+    chunks = []
+    current_chunk = ""
+
+    for sentence in sentences:
+        # If adding this sentence would exceed the limit
+        if len(current_chunk) + len(sentence) + 1 > max_chars:
+            # Save what we have so far
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+                current_chunk = ""
+
+            # If a single sentence exceeds the limit, split it further
+            if len(sentence) > max_chars:
+                sub_parts = _split_long_sentence(sentence, max_chars)
+                # Add all but the last sub-part as complete chunks
+                for part in sub_parts[:-1]:
+                    chunks.append(part.strip())
+                # Start new chunk with the last sub-part
+                current_chunk = sub_parts[-1]
+            else:
+                current_chunk = sentence
+        else:
+            if current_chunk:
+                current_chunk += " " + sentence
+            else:
+                current_chunk = sentence
+
+    if current_chunk.strip():
+        chunks.append(current_chunk.strip())
+
+    return chunks
+
+
+def _split_long_sentence(sentence: str, max_chars: int) -> List[str]:
+    """Split a single long sentence at commas/semicolons, then word boundaries, then character boundaries."""
+    # Try splitting at commas and semicolons first
+    parts = re.split(r'(?<=[,;，；])\s*', sentence)
+    
+    result = []
+    current = ""
+
+    for part in parts:
+        if len(current) + len(part) + 1 > max_chars:
+            if current:
+                result.append(current.strip())
+                current = ""
+            # If still too long, split at word boundaries
+            if len(part) > max_chars:
+                words = part.split()
+                word_chunk = ""
+                for word in words:
+                    if len(word) > max_chars:
+                        # Word itself is too long — split at character boundaries
+                        if word_chunk:
+                            result.append(word_chunk.strip())
+                            word_chunk = ""
+                        while len(word) > max_chars:
+                            result.append(word[:max_chars])
+                            word = word[max_chars:]
+                        current = word
+                    elif len(word_chunk) + len(word) + 1 > max_chars:
+                        if word_chunk:
+                            result.append(word_chunk.strip())
+                        word_chunk = word
+                    else:
+                        word_chunk = (word_chunk + " " + word).strip()
+                if word_chunk:
+                    current = word_chunk
+            else:
+                current = part
+        else:
+            current = (current + " " + part).strip() if current else part
+
+    if current.strip():
+        result.append(current.strip())
+
+    return result
+
+
+def _synthesize_single_chunk(text: str, voice: str, resource_id: str, rate: str, device: dict) -> str:
+    """
+    Synthesize a single text chunk via CapCut TTS.
+    Returns the speech_url on success, raises HTTPException on failure.
+    """
+    babi, body = tts_new_body([text], voice, resource_id, rate, device)
+    body_text = compact_json(body)
+
+    query = common_query(device, babi, include_region=True)
+    url = BASE + "/lv/v1/common_task/new?" + urlencode(query)
+
+    headers = base_headers(device, body_text, appid=True)
+    headers["sign"] = make_sign_header(url, device["appvr"], headers["device-time"], device["tdid"])
+
+    resp = requests.post(url, headers=headers, data=body_text.encode("utf-8"), timeout=30)
+    data = checked_json_response(resp, "tts_new")
+
+    tasks = data.get("data", {}).get("tasks", [])
+    if not tasks:
+        raise HTTPException(status_code=502, detail=f"CapCut task creation failed: {data}")
+
+    task_id = tasks[0]["id"]
+    token = tasks[0]["token"]
+
+    # Poll the status of the task
+    max_attempts = 15
+    for attempt in range(1, max_attempts + 1):
+        time.sleep(1.5)
+
+        q_body = query_body(task_id, token, "sami_text_to_speech")
+        q_body_text = compact_json(q_body)
+
+        q_query = common_query(device, None, include_region=False)
+        q_url = BASE + "/lv/v1/common_task/query?" + urlencode(q_query)
+
+        q_headers = base_headers(device, q_body_text, appid=True)
+        q_headers["sign"] = make_sign_header(q_url, device["appvr"], q_headers["device-time"], device["tdid"])
+
+        q_resp = requests.post(q_url, headers=q_headers, data=q_body_text.encode("utf-8"), timeout=30)
+        q_data = checked_json_response(q_resp, "tts_query")
+
+        q_tasks = q_data.get("data", {}).get("tasks", [])
+        if not q_tasks:
+            continue
+
+        status = q_tasks[0].get("status")
+        logger.info(f"Polling TTS chunk task {task_id} (attempt {attempt}): status={status}")
+
+        if status in ["success", "succeed"]:
+            payload_str = q_tasks[0].get("payload", "{}")
+            task_payload = json.loads(payload_str)
+            audio_subtitles = task_payload.get("audio_subtitles", [])
+            if audio_subtitles:
+                return audio_subtitles[0].get("speech_url")
+            else:
+                raise HTTPException(status_code=502, detail="No audio URL in CapCut success payload")
+
+        elif status in ["failed", "error"]:
+            raise HTTPException(status_code=502, detail=f"CapCut engine failed to synthesize audio chunk: {q_tasks[0]}")
+
+    raise HTTPException(status_code=504, detail="Polling CapCut TTS task timed out")
+
+
+def _cleanup_old_audio_files():
+    """Remove audio output files older than 1 hour."""
+    try:
+        now = time.time()
+        for fname in os.listdir(AUDIO_OUTPUT_DIR):
+            fpath = os.path.join(AUDIO_OUTPUT_DIR, fname)
+            if os.path.isfile(fpath) and now - os.path.getmtime(fpath) > 3600:
+                os.remove(fpath)
+    except Exception as e:
+        logger.warning(f"Cleanup old audio files error: {e}")
+
+# ─── API Models ───────────────────────────────────────────────────────────────
+
 class TTSRequest(BaseModel):
     text: str
     voice: Optional[str] = "BV074_streaming"
     resource_id: Optional[str] = None
     rate: Optional[float] = 1.0
 
-# API endpoints
+# ─── API Endpoints ────────────────────────────────────────────────────────────
+
 @app.get("/api/voices")
 def get_voices():
     """Retrieve the available voice list with filters metadata."""
     return voices_list
 
+@app.get("/api/audio/{filename}")
+def serve_audio(filename: str):
+    """Serve a merged audio file from the audio_output directory."""
+    file_path = os.path.join(AUDIO_OUTPUT_DIR, filename)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Audio file not found")
+    return FileResponse(file_path, media_type="audio/mpeg", filename=filename)
+
 @app.post("/api/tts")
-def text_to_speech(payload: TTSRequest):
+def text_to_speech(payload: TTSRequest, request: Request):
     """
     Generate audio from text using CapCut TTS.
-    Automatically polls the task status and returns the final speech URL.
+    Supports long texts by automatically splitting into chunks and merging results.
     """
     if not payload.text.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
@@ -105,75 +294,62 @@ def text_to_speech(payload: TTSRequest):
             voice = "BV074_streaming"
             resource_id = "7102355709945188865"
 
-    device = generate_fresh_device()
+    # Split text into chunks if it exceeds the character limit
+    chunks = split_text_into_chunks(payload.text.strip())
+    total_chunks = len(chunks)
+    logger.info(f"TTS request: {len(payload.text)} chars → {total_chunks} chunk(s), voice='{voice}', rate={payload.rate}")
     
     try:
-        # 1. Create TTS task
-        logger.info(f"Submitting TTS task: text='{payload.text[:30]}...', voice='{voice}', rate={payload.rate}")
-        babi, body = tts_new_body([payload.text], voice, resource_id, str(payload.rate), device)
-        body_text = compact_json(body)
-        
-        query = common_query(device, babi, include_region=True)
-        url = BASE + "/lv/v1/common_task/new?" + urlencode(query)
-        
-        headers = base_headers(device, body_text, appid=True)
-        headers["sign"] = make_sign_header(url, device["appvr"], headers["device-time"], device["tdid"])
+        if total_chunks == 1:
+            # ── Single chunk: original fast path ──
+            device = generate_fresh_device()
+            speech_url = _synthesize_single_chunk(chunks[0], voice, resource_id, str(payload.rate), device)
+            return {
+                "status": "success",
+                "speech_url": speech_url,
+                "voice": voice,
+                "display_name": voice_map.get(voice, {}).get("display_name", voice),
+                "chunks": 1,
+            }
+        else:
+            # ── Multiple chunks: synthesize each, download, merge ──
+            speech_urls = []
+            for i, chunk in enumerate(chunks):
+                logger.info(f"Processing chunk {i+1}/{total_chunks}: '{chunk[:40]}...' ({len(chunk)} chars)")
+                # Use a fresh device for each chunk to avoid rate limiting
+                device = generate_fresh_device()
+                url = _synthesize_single_chunk(chunk, voice, resource_id, str(payload.rate), device)
+                speech_urls.append(url)
 
-        resp = requests.post(url, headers=headers, data=body_text.encode("utf-8"), timeout=30)
-        data = checked_json_response(resp, "tts_new")
-        
-        tasks = data.get("data", {}).get("tasks", [])
-        if not tasks:
-            raise HTTPException(status_code=502, detail=f"CapCut task creation failed: {data}")
-        
-        task_id = tasks[0]["id"]
-        token = tasks[0]["token"]
-        logger.info(f"TTS task created: task_id={task_id}")
+            # Download all audio chunks and concatenate MP3 data
+            merged_data = bytearray()
+            for i, url in enumerate(speech_urls):
+                logger.info(f"Downloading chunk {i+1}/{total_chunks} audio...")
+                audio_resp = requests.get(url, timeout=60)
+                if audio_resp.status_code != 200:
+                    raise HTTPException(status_code=502, detail=f"Failed to download audio chunk {i+1}")
+                merged_data.extend(audio_resp.content)
 
-        # 2. Poll the status of the task
-        max_attempts = 15
-        for attempt in range(1, max_attempts + 1):
-            time.sleep(1.5)
+            # Save merged MP3 file
+            _cleanup_old_audio_files()
+            output_filename = f"tts_{uuid.uuid4().hex[:12]}.mp3"
+            output_path = os.path.join(AUDIO_OUTPUT_DIR, output_filename)
+            with open(output_path, "wb") as f:
+                f.write(merged_data)
             
-            q_body = query_body(task_id, token, "sami_text_to_speech")
-            q_body_text = compact_json(q_body)
-            
-            q_query = common_query(device, None, include_region=False)
-            q_url = BASE + "/lv/v1/common_task/query?" + urlencode(q_query)
-            
-            q_headers = base_headers(device, q_body_text, appid=True)
-            q_headers["sign"] = make_sign_header(q_url, device["appvr"], q_headers["device-time"], device["tdid"])
+            logger.info(f"Merged {total_chunks} chunks → {output_filename} ({len(merged_data)} bytes)")
 
-            q_resp = requests.post(q_url, headers=q_headers, data=q_body_text.encode("utf-8"), timeout=30)
-            q_data = checked_json_response(q_resp, "tts_query")
-            
-            q_tasks = q_data.get("data", {}).get("tasks", [])
-            if not q_tasks:
-                continue
-                
-            status = q_tasks[0].get("status")
-            logger.info(f"Polling TTS task {task_id} (attempt {attempt}): status={status}")
-            
-            if status in ["success", "succeed"]:
-                payload_str = q_tasks[0].get("payload", "{}")
-                task_payload = json.loads(payload_str)
-                audio_subtitles = task_payload.get("audio_subtitles", [])
-                if audio_subtitles:
-                    speech_url = audio_subtitles[0].get("speech_url")
-                    return {
-                        "status": "success",
-                        "task_id": task_id,
-                        "speech_url": speech_url,
-                        "voice": voice,
-                        "display_name": voice_map.get(voice, {}).get("display_name", voice)
-                    }
-                else:
-                    raise HTTPException(status_code=502, detail="No audio URL in CapCut success payload")
-            
-            elif status in ["failed", "error"]:
-                raise HTTPException(status_code=502, detail=f"CapCut engine failed to synthesize audio: {q_tasks[0]}")
-                
-        raise HTTPException(status_code=504, detail="Polling CapCut TTS task timed out")
+            # Build the URL for the merged audio file
+            base_url = str(request.base_url).rstrip("/")
+            merged_speech_url = f"{base_url}/api/audio/{output_filename}"
+
+            return {
+                "status": "success",
+                "speech_url": merged_speech_url,
+                "voice": voice,
+                "display_name": voice_map.get(voice, {}).get("display_name", voice),
+                "chunks": total_chunks,
+            }
         
     except Exception as e:
         logger.error(f"TTS error: {e}")

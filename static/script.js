@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabPanels = document.querySelectorAll(".tab-panel");
     const apiStatusText = document.getElementById("api-status-text");
     const apiStatusDot = document.querySelector(".status-indicator .dot");
+    const historyTbody = document.getElementById("history-tbody");
+
+    let ttsHistory = [];
 
     // Custom API Base URL settings
     let apiBaseUrl = localStorage.getItem("api_base_url");
@@ -30,8 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const apiBaseInputDocs = document.getElementById("api-base-input-docs");
     const btnSaveApiBase = document.getElementById("btn-save-api-base");
 
-    // Theme Switcher Elements
-    const themeCheckbox = document.getElementById("theme-toggle-checkbox");
+    // Theme Switcher Elements — two checkboxes (desktop + mobile)
+    const themeCheckboxes = document.querySelectorAll("#theme-toggle-checkbox");
+    const themeCheckbox = themeCheckboxes[0]; // primary reference
 
     // Sidebar Collapsible Elements
     const toggleSidebarBtn = document.getElementById("sidebar-toggle");
@@ -130,27 +134,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function applyTheme(theme) {
         const html = document.documentElement;
-        if (theme === "dark") {
-            html.classList.add("dark");
-            themeCheckbox.checked = true;
-        } else {
-            html.classList.remove("dark");
-            themeCheckbox.checked = false;
-        }
+        const isDark = theme === "dark";
+        if (isDark) { html.classList.add("dark"); } else { html.classList.remove("dark"); }
+        // Sync all theme checkboxes
+        themeCheckboxes.forEach(cb => cb.checked = isDark);
     }
 
     // Initialize theme on load
     applyTheme(currentTheme);
 
-    // Toggle listener
-    themeCheckbox.addEventListener("change", () => {
-        if (themeCheckbox.checked) {
-            applyTheme("dark");
-            localStorage.setItem("theme", "dark");
-        } else {
-            applyTheme("light");
-            localStorage.setItem("theme", "light");
-        }
+    // Toggle listener — sync all checkboxes
+    themeCheckboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+            const isDark = cb.checked;
+            applyTheme(isDark ? "dark" : "light");
+            localStorage.setItem("theme", isDark ? "dark" : "light");
+            // Sync sibling checkboxes
+            themeCheckboxes.forEach(other => { if (other !== cb) other.checked = isDark; });
+        });
     });
 
     // Initialize API Base inputs
@@ -181,12 +182,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let isCollapsed = false;
 
     // Responsive initializer: set correct margin on page load
+    const SIDEBAR_EXPANDED = "240px";
+    const SIDEBAR_COLLAPSED = "64px";
+
     function updateResponsiveLayout() {
         const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-        if (isDesktop) {
-            const sidebarWidth = isCollapsed ? "80px" : "280px";
-            sidebarElement.style.width = sidebarWidth;
-            mainCanvasElement.style.marginLeft = sidebarWidth;
+        if (isDesktop && sidebarElement) {
+            const w = isCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED;
+            sidebarElement.style.width = w;
+            mainCanvasElement.style.marginLeft = w;
         } else {
             mainCanvasElement.style.marginLeft = "0";
         }
@@ -197,21 +201,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (toggleSidebarBtn) {
         toggleSidebarBtn.addEventListener("click", () => {
             isCollapsed = !isCollapsed;
-            
+
             if (isCollapsed) {
-                sidebarElement.style.width = "80px";
-                sidebarElement.classList.replace("p-6", "p-4");
-                mainCanvasElement.style.marginLeft = "80px";
-                brandTextElement.classList.add("hidden");
+                sidebarElement.style.width = SIDEBAR_COLLAPSED;
+                mainCanvasElement.style.marginLeft = SIDEBAR_COLLAPSED;
+                if (brandTextElement) brandTextElement.classList.add("hidden");
                 navLabelElements.forEach(label => label.classList.add("hidden"));
                 toggleSidebarBtn.querySelector("span").textContent = "chevron_right";
                 toggleSidebarBtn.classList.remove("ml-auto");
                 toggleSidebarBtn.classList.add("mx-auto");
             } else {
-                sidebarElement.style.width = "280px";
-                sidebarElement.classList.replace("p-4", "p-6");
-                mainCanvasElement.style.marginLeft = "280px";
-                brandTextElement.classList.remove("hidden");
+                sidebarElement.style.width = SIDEBAR_EXPANDED;
+                mainCanvasElement.style.marginLeft = SIDEBAR_EXPANDED;
+                if (brandTextElement) brandTextElement.classList.remove("hidden");
                 navLabelElements.forEach(label => label.classList.remove("hidden"));
                 toggleSidebarBtn.querySelector("span").textContent = "chevron_left";
                 toggleSidebarBtn.classList.add("ml-auto");
@@ -237,6 +239,117 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     checkServerStatus();
     setInterval(checkServerStatus, 15000);
+
+    // ─── History Management Logic ─────────────────────────────────────────────
+    function loadHistory() {
+        try {
+            const data = localStorage.getItem("tts_history");
+            ttsHistory = data ? JSON.parse(data) : [];
+        } catch (e) {
+            console.error("Failed to parse history data", e);
+            ttsHistory = [];
+        }
+        renderHistory();
+    }
+
+    function renderHistory() {
+        if (!historyTbody) return;
+        historyTbody.innerHTML = "";
+
+        if (ttsHistory.length === 0) {
+            historyTbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="px-4 py-8 text-center text-outline/40 text-xs">
+                        Chưa có lịch sử tạo giọng nói. Hãy nhập văn bản ở trên để thử ngay!
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        ttsHistory.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.className = "history-row border-b border-outline-variant/10";
+            row.innerHTML = `
+                <td class="px-4 py-2.5 text-sm text-on-surface-variant max-w-[200px] md:max-w-[300px] truncate" title="${escapeHtml(item.text)}">${item.text}</td>
+                <td class="px-4 py-2.5 text-sm text-on-surface hidden sm:table-cell">${item.voice_name}</td>
+                <td class="px-4 py-2.5 text-xs text-outline hidden md:table-cell">${item.date}</td>
+                <td class="px-4 py-2.5 text-right">
+                    <div class="flex justify-end gap-1.5">
+                        <button class="btn-play-history w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-primary transition-colors" data-index="${index}">
+                            <span class="material-symbols-outlined text-[14px]">play_arrow</span>
+                        </button>
+                        <a href="${item.speech_url}" download="tts_audio.mp3" target="_blank" class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[14px]">download</span>
+                        </a>
+                    </div>
+                </td>
+            `;
+
+            // Bind play event
+            row.querySelector(".btn-play-history").addEventListener("click", () => {
+                playHistoryItem(item);
+            });
+
+            historyTbody.appendChild(row);
+        });
+    }
+
+    function playHistoryItem(item) {
+        ttsAudio.src = item.speech_url;
+        btnDownloadAudio.href = item.speech_url;
+        previewVoiceName.textContent = `PREVIEWING: ${item.voice_name}`;
+        mobilePreviewVoiceName.textContent = `${item.voice_name} đang đọc...`;
+
+        // Display Output widgets (desktop card and mobile bottom player bar)
+        ttsOutputCard.classList.remove("hidden");
+        mobilePreviewBar.classList.remove("hidden");
+        setTimeout(() => {
+            mobilePreviewBar.classList.remove("translate-y-full");
+        }, 50);
+
+        ttsAudio.play();
+
+        // Copy direct link trigger
+        btnCopyAudioUrl.onclick = () => {
+            navigator.clipboard.writeText(item.speech_url);
+            const originalContent = btnCopyAudioUrl.innerHTML;
+            btnCopyAudioUrl.innerHTML = `<span class="material-symbols-outlined text-xs">done</span>Đã chép`;
+            setTimeout(() => btnCopyAudioUrl.innerHTML = originalContent, 2000);
+        };
+    }
+
+    function addHistoryItem(text, voiceName, speechUrl) {
+        const dateObj = new Date();
+        const dateStr = `${padZero(dateObj.getDate())}/${padZero(dateObj.getMonth() + 1)}/${dateObj.getFullYear()}`;
+        
+        const newItem = {
+            text: text,
+            voice_name: voiceName,
+            speech_url: speechUrl,
+            date: dateStr
+        };
+
+        ttsHistory.unshift(newItem);
+        if (ttsHistory.length > 20) {
+            ttsHistory = ttsHistory.slice(0, 20);
+        }
+
+        localStorage.setItem("tts_history", JSON.stringify(ttsHistory));
+        renderHistory();
+    }
+
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Load initial history
+    loadHistory();
 
     // Tab Navigation switching (Desktop sidebar)
     navItems.forEach(item => {
@@ -264,9 +377,9 @@ document.addEventListener("DOMContentLoaded", () => {
         navItems.forEach(nav => {
             const navTabId = nav.getAttribute("data-tab");
             if (navTabId === tabId) {
-                nav.className = "nav-item w-full flex items-center gap-4 px-4 py-3 bg-primary-container/20 text-primary font-bold rounded-xl transition-all scale-100 active:scale-95 text-left";
+                nav.className = "nav-item w-full flex items-center gap-3 px-3 py-2 bg-primary-container/20 text-primary font-bold rounded-lg transition-all active:scale-95 text-left";
             } else {
-                nav.className = "nav-item w-full flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-xl transition-all scale-100 active:scale-95 text-left";
+                nav.className = "nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-lg transition-all active:scale-95 text-left";
             }
         });
 
@@ -274,10 +387,10 @@ document.addEventListener("DOMContentLoaded", () => {
         mobileNavItems.forEach(nav => {
             const navTabId = nav.getAttribute("data-tab");
             if (navTabId === tabId) {
-                nav.className = "mobile-nav-item flex flex-col items-center justify-center text-primary font-bold scale-105 transition-all duration-300";
+                nav.className = "mobile-nav-item flex flex-col items-center justify-center text-primary font-bold scale-105 transition-all duration-200";
                 nav.querySelector("span").style.fontVariationSettings = "'FILL' 1";
             } else {
-                nav.className = "mobile-nav-item flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-300";
+                nav.className = "mobile-nav-item flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200";
                 nav.querySelector("span").style.fontVariationSettings = "'FILL' 0";
             }
         });
@@ -294,9 +407,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // TTS: Character count monitor
+    // TTS: Character count monitor with chunking info
+    const TTS_CHUNK_LIMIT = 280;
     ttsText.addEventListener("input", () => {
-        charCount.textContent = `${ttsText.value.length} ký tự`;
+        const len = ttsText.value.length;
+        if (len > TTS_CHUNK_LIMIT) {
+            const estimatedChunks = Math.ceil(len / TTS_CHUNK_LIMIT);
+            charCount.textContent = `${len} ký tự (~${estimatedChunks} phần)`;
+            charCount.style.color = "var(--color-warning, #f59e0b)";
+        } else {
+            charCount.textContent = `${len} ký tự`;
+            charCount.style.color = "";
+        }
     });
 
     // TTS: Rate multiplier slider & Presets
@@ -428,7 +550,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Show spinner state
         btnGenerateTts.disabled = true;
-        btnGenerateTts.querySelector(".btn-text").textContent = "Đang tạo giọng nói...";
+        const textLength = text.length;
+        const estimatedChunks = Math.ceil(textLength / TTS_CHUNK_LIMIT);
+        if (estimatedChunks > 1) {
+            btnGenerateTts.querySelector(".btn-text").textContent = `Đang tạo giọng nói (${estimatedChunks} phần)...`;
+        } else {
+            btnGenerateTts.querySelector(".btn-text").textContent = "Đang tạo giọng nói...";
+        }
         btnGenerateTts.querySelector(".btn-icon-symbol").classList.add("hidden");
         btnGenerateTts.querySelector(".loader-spinner").classList.remove("hidden");
         
@@ -469,6 +597,9 @@ document.addEventListener("DOMContentLoaded", () => {
             previewVoiceName.textContent = `PREVIEWING: ${result.display_name}`;
             mobilePreviewVoiceName.textContent = `${result.display_name} đang đọc...`;
             
+            // Add to client-side localStorage history
+            addHistoryItem(text, result.display_name, result.speech_url);
+
             // Display Output widgets (desktop card and mobile bottom player bar)
             ttsOutputCard.classList.remove("hidden");
             mobilePreviewBar.classList.remove("hidden");

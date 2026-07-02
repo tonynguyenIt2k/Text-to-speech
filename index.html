@@ -1,582 +1,593 @@
 <!DOCTYPE html>
 <html class="dark" lang="vi">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>AI Voice Studio - Text to Speech</title>
-    <!-- Tailwind Play CDN -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="static/style.css">
-    <script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                "surface-container-high": "rgb(var(--color-surface-container-high))",
-                "outline": "rgb(var(--color-outline))",
-                "on-tertiary-container": "rgb(var(--color-on-tertiary-container))",
-                "error": "rgb(var(--color-error))",
-                "surface-variant": "rgb(var(--color-surface-variant))",
-                "on-tertiary-fixed": "rgb(var(--color-on-tertiary-fixed))",
-                "secondary-fixed-dim": "rgb(var(--color-secondary-fixed-dim))",
-                "secondary-fixed": "rgb(var(--color-secondary-fixed))",
-                "on-secondary-container": "rgb(var(--color-on-secondary-container))",
-                "primary-fixed-dim": "rgb(var(--color-primary-fixed-dim))",
-                "primary-fixed": "rgb(var(--color-primary-fixed))",
-                "primary-container": "rgb(var(--color-primary-container))",
-                "secondary": "rgb(var(--color-secondary))",
-                "on-primary-fixed": "rgb(var(--color-on-primary-fixed))",
-                "surface-container-highest": "rgb(var(--color-surface-container-highest))",
-                "inverse-primary": "rgb(var(--color-inverse-primary))",
-                "secondary-container": "rgb(var(--color-secondary-container))",
-                "on-secondary-fixed": "rgb(var(--color-on-secondary-fixed))",
-                "surface-dim": "rgb(var(--color-surface-dim))",
-                "on-primary": "rgb(var(--color-on-primary))",
-                "surface-tint": "rgb(var(--color-surface-tint))",
-                "background": "rgb(var(--color-background))",
-                "on-secondary-fixed-variant": "rgb(var(--color-on-secondary-fixed-variant))",
-                "on-surface-variant": "rgb(var(--color-on-surface-variant))",
-                "tertiary": "rgb(var(--color-tertiary))",
-                "on-tertiary": "rgb(var(--color-on-tertiary))",
-                "on-primary-fixed-variant": "rgb(var(--color-on-primary-fixed-variant))",
-                "on-background": "rgb(var(--color-on-background))",
-                "outline-variant": "rgb(var(--color-outline-variant))",
-                "on-error": "rgb(var(--color-on-error))",
-                "error-container": "rgb(var(--color-error-container))",
-                "on-secondary": "rgb(var(--color-on-secondary))",
-                "surface-bright": "rgb(var(--color-surface-bright))",
-                "surface": "rgb(var(--color-surface))",
-                "tertiary-fixed": "rgb(var(--color-tertiary-fixed))",
-                "on-primary-container": "rgb(var(--color-on-primary-container))",
-                "on-tertiary-fixed-variant": "rgb(var(--color-on-tertiary-fixed-variant))",
-                "tertiary-container": "rgb(var(--color-tertiary-container))",
-                "primary": "rgb(var(--color-primary))",
-                "surface-container": "rgb(var(--color-surface-container))",
-                "on-error-container": "rgb(var(--color-on-error-container))",
-                "tertiary-fixed-dim": "rgb(var(--color-tertiary-fixed-dim))",
-                "surface-container-lowest": "rgb(var(--color-surface-container-lowest))",
-                "on-surface": "rgb(var(--color-on-surface))",
-                "surface-container-low": "rgb(var(--color-surface-container-low))",
-                "inverse-surface": "rgb(var(--color-inverse-surface))",
-                "inverse-on-surface": "rgb(var(--color-inverse-on-surface))"
-              },
-              "borderRadius": {
-                "DEFAULT": "0.25rem",
-                "lg": "0.5rem",
-                "xl": "0.75rem",
-                "full": "9999px"
-              },
-              "spacing": {
-                "unit": "8px",
-                "margin-desktop": "40px",
-                "gutter": "24px",
-                "margin-mobile": "16px",
-                "container-max": "1440px",
-                "section-gap": "64px"
-              },
-              "fontFamily": {
-                "body-lg": ["Manrope"],
-                "headline-lg": ["Manrope"],
-                "display-lg": ["Manrope"],
-                "body-md": ["Manrope"],
-                "label-sm": ["JetBrains Mono"],
-                "headline-md": ["Manrope"]
-              },
-              "fontSize": {
-                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
-                "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
-                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
-                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
-              }
-            },
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>AI Voice Studio - Text to Speech &amp; STT</title>
+  <meta name="description" content="Chuyển văn bản thành giọng nói và nhận diện âm thanh chất lượng cao sử dụng công nghệ AI của CapCut."/>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="static/style.css"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-high":     "rgb(var(--color-surface-container-high))",
+            "surface-container-highest":  "rgb(var(--color-surface-container-highest))",
+            "surface-container-lowest":   "rgb(var(--color-surface-container-lowest))",
+            "surface-container-low":      "rgb(var(--color-surface-container-low))",
+            "surface-container":          "rgb(var(--color-surface-container))",
+            "surface-variant":            "rgb(var(--color-surface-variant))",
+            "surface-bright":             "rgb(var(--color-surface-bright))",
+            "surface-dim":                "rgb(var(--color-surface-dim))",
+            "surface":                    "rgb(var(--color-surface))",
+            "background":                 "rgb(var(--color-background))",
+            "on-surface":                 "rgb(var(--color-on-surface))",
+            "on-surface-variant":         "rgb(var(--color-on-surface-variant))",
+            "on-background":              "rgb(var(--color-on-background))",
+            "outline":                    "rgb(var(--color-outline))",
+            "outline-variant":            "rgb(var(--color-outline-variant))",
+            "primary":                    "rgb(var(--color-primary))",
+            "primary-container":          "rgb(var(--color-primary-container))",
+            "on-primary":                 "rgb(var(--color-on-primary))",
+            "on-primary-container":       "rgb(var(--color-on-primary-container))",
+            "primary-fixed":              "rgb(var(--color-primary-fixed))",
+            "primary-fixed-dim":          "rgb(var(--color-primary-fixed-dim))",
+            "secondary":                  "rgb(var(--color-secondary))",
+            "secondary-container":        "rgb(var(--color-secondary-container))",
+            "on-secondary":               "rgb(var(--color-on-secondary))",
+            "on-secondary-container":     "rgb(var(--color-on-secondary-container))",
+            "tertiary":                   "rgb(var(--color-tertiary))",
+            "tertiary-container":         "rgb(var(--color-tertiary-container))",
+            "on-tertiary":                "rgb(var(--color-on-tertiary))",
+            "error":                      "rgb(var(--color-error))",
+            "error-container":            "rgb(var(--color-error-container))",
+            "inverse-primary":            "rgb(var(--color-inverse-primary))",
+            "inverse-surface":            "rgb(var(--color-inverse-surface))",
+            "inverse-on-surface":         "rgb(var(--color-inverse-on-surface))",
           },
-        }
-    </script>
+          fontFamily: {
+            "body-md":    ["Manrope", "sans-serif"],
+            "body-lg":    ["Manrope", "sans-serif"],
+            "headline-md":["Manrope", "sans-serif"],
+            "headline-lg":["Manrope", "sans-serif"],
+            "label-sm":   ["JetBrains Mono", "monospace"],
+          },
+          fontSize: {
+            "body-md":    ["14px", {lineHeight:"20px", fontWeight:"400"}],
+            "body-lg":    ["16px", {lineHeight:"24px", fontWeight:"400"}],
+            "headline-md":["20px", {lineHeight:"28px", fontWeight:"600"}],
+            "headline-lg":["28px", {lineHeight:"36px", letterSpacing:"-0.01em", fontWeight:"700"}],
+            "label-sm":   ["11px", {lineHeight:"14px", letterSpacing:"0.05em", fontWeight:"500"}],
+          },
+        },
+      },
+    }
+  </script>
 </head>
-<body class="overflow-hidden bg-surface-dim">
-    <!-- TopAppBar (Visible only on Mobile) -->
-    <header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 flex justify-between items-center px-4 h-16 md:hidden">
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary">graphic_eq</span>
-            <h1 class="font-headline-md text-xl font-bold text-primary tracking-tight">AI Voice Studio</h1>
-        </div>
-        <button class="hover:opacity-80 transition-opacity active:scale-95 duration-200">
-            <span class="material-symbols-outlined text-primary text-[32px]">account_circle</span>
-        </button>
-    </header>
+<body class="overflow-hidden">
 
-    <!-- Side Navigation Bar (Visible only on Desktop) -->
-    <aside id="sidebar" class="hidden md:flex fixed left-0 top-0 h-full bg-surface-dim border-r border-outline-variant/30 flex-col gap-4 p-6 z-50 transition-all duration-300" style="width: 280px;">
-        <!-- Brand Title -->
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-xl primary-gradient flex items-center justify-center text-white shadow-lg shadow-primary/20 aspect-square shrink-0">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">graphic_eq</span>
-            </div>
-            <div id="brand-text" class="transition-all duration-300">
-                <h1 class="font-headline-md text-headline-md font-bold text-primary whitespace-nowrap">AI Voice Studio</h1>
-                <p class="font-label-sm text-label-sm text-outline uppercase tracking-widest">V1.0.4</p>
-            </div>
-            <button class="ml-auto w-8 h-8 rounded-full border border-outline-variant/30 hover:bg-surface-variant/50 flex items-center justify-center text-outline transition-all active:scale-95 shrink-0" id="sidebar-toggle">
-                <span class="material-symbols-outlined text-[18px]">chevron_left</span>
-            </button>
-        </div>
-        <!-- Navigation Items -->
-        <nav class="flex flex-col gap-2 flex-grow">
-            <!-- Active: Text to Speech -->
-            <button class="nav-item w-full flex items-center gap-4 px-4 py-3 bg-primary-container/20 text-primary font-bold rounded-xl transition-all scale-100 active:scale-95 text-left" data-tab="tts">
-                <span class="material-symbols-outlined shrink-0">record_voice_over</span>
-                <span class="font-body-md text-body-md nav-label whitespace-nowrap transition-all duration-300">Text to Speech</span>
-            </button>
-            <button class="nav-item w-full flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-xl transition-all scale-100 active:scale-95 text-left" data-tab="stt">
-                <span class="material-symbols-outlined shrink-0">mic</span>
-                <span class="font-body-md text-body-md nav-label whitespace-nowrap transition-all duration-300">Speech to Text</span>
-            </button>
-            <button class="nav-item w-full flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-xl transition-all scale-100 active:scale-95 text-left" data-tab="docs">
-                <span class="material-symbols-outlined shrink-0">description</span>
-                <span class="font-body-md text-body-md nav-label whitespace-nowrap transition-all duration-300">API Documentation</span>
-            </button>
-        </nav>
-        <!-- Footer Sidebar -->
-        <div class="mt-auto pt-4 border-t border-outline-variant/20 space-y-3">
-            <div class="flex items-center gap-3 px-4 py-2 text-outline font-label-sm text-label-sm status-indicator">
-                <span class="material-symbols-outlined text-green-400 status-pulse dot shrink-0" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
-                <span id="api-status-text" class="nav-label whitespace-nowrap transition-all duration-300">Server: Connecting...</span>
-            </div>
-            <div class="px-4 pb-2 nav-label transition-all duration-300">
-                <label class="font-label-sm text-[10px] text-outline uppercase tracking-wider block mb-1">ĐỊA CHỈ API SERVER</label>
-                <input id="api-base-input" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary/50 outline-none" type="text" placeholder="http://localhost:8000"/>
-            </div>
-        </div>
-    </aside>
+  <!-- ═══ SIDEBAR (Desktop) ════════════════════════════════════════════════════ -->
+  <aside id="sidebar" class="hidden md:flex fixed left-0 top-0 h-full bg-surface-dim border-r border-outline-variant/30 flex-col gap-3 p-4 z-50 transition-all duration-300" style="width:240px;">
 
-    <!-- Main Canvas -->
-    <main id="main-canvas" class="h-screen px-4 md:px-10 pb-40 md:pb-10 pt-0 md:pt-0 overflow-y-auto bg-surface-container-lowest relative transition-all duration-300 mt-16 md:mt-0" style="margin-left: 0;">
-        <!-- Floating Theme Switcher Toggle Switch (Floating Top Right, aligned for both mobile and desktop) -->
-        <div class="fixed right-16 md:right-10 top-4 md:top-8 z-50 flex items-center">
-            <label class="relative inline-flex items-center cursor-pointer group">
-                <input id="theme-toggle-checkbox" class="sr-only peer" type="checkbox"/>
-                <div class="w-14 h-7 bg-surface-variant/50 glass-panel rounded-full peer transition-all duration-300 peer-checked:bg-primary/30 border border-outline-variant/30">
-                    <div class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow-lg transition-all duration-300 peer-checked:translate-x-7 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[14px] text-primary peer-checked:hidden" style="font-variation-settings: 'FILL' 1;">light_mode</span>
-                        <span class="material-symbols-outlined text-[14px] text-primary hidden peer-checked:block" style="font-variation-settings: 'FILL' 1;">dark_mode</span>
-                    </div>
+    <!-- Brand -->
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-8 h-8 rounded-lg primary-gradient flex items-center justify-center text-white shadow-md shadow-primary/25 shrink-0">
+        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">graphic_eq</span>
+      </div>
+      <div id="brand-text">
+        <h1 class="font-headline-md text-sm font-bold text-primary whitespace-nowrap leading-tight">AI Voice Studio</h1>
+        <p class="font-label-sm text-[9px] text-outline uppercase tracking-widest">V1.0.4</p>
+      </div>
+      <button id="sidebar-toggle" class="ml-auto w-6 h-6 rounded-full border border-outline-variant/30 hover:bg-surface-variant/60 flex items-center justify-center text-outline transition-colors active:scale-95 shrink-0">
+        <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex flex-col gap-1 flex-grow">
+      <button class="nav-item w-full flex items-center gap-3 px-3 py-2 bg-primary-container/20 text-primary font-bold rounded-lg transition-all active:scale-95 text-left" data-tab="tts">
+        <span class="material-symbols-outlined text-[18px] shrink-0">record_voice_over</span>
+        <span class="font-body-md text-sm nav-label whitespace-nowrap">Text to Speech</span>
+      </button>
+      <button class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-lg transition-all active:scale-95 text-left" data-tab="stt">
+        <span class="material-symbols-outlined text-[18px] shrink-0">mic</span>
+        <span class="font-body-md text-sm nav-label whitespace-nowrap">Speech to Text</span>
+      </button>
+      <button class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 rounded-lg transition-all active:scale-95 text-left" data-tab="docs">
+        <span class="material-symbols-outlined text-[18px] shrink-0">description</span>
+        <span class="font-body-md text-sm nav-label whitespace-nowrap">API Documentation</span>
+      </button>
+    </nav>
+
+    <!-- Footer -->
+    <div class="mt-auto pt-3 border-t border-outline-variant/20 space-y-2">
+      <!-- Status -->
+      <div class="status-indicator flex items-center gap-2 px-3 py-1.5 text-outline font-label-sm text-[10px]">
+        <span class="material-symbols-outlined text-green-400 status-pulse dot text-[13px] shrink-0" style="font-variation-settings:'FILL' 1;">fiber_manual_record</span>
+        <span id="api-status-text" class="nav-label whitespace-nowrap">Server: Connecting...</span>
+      </div>
+      <!-- API Base Input -->
+      <div class="px-3 pb-1 nav-label">
+        <label class="font-label-sm text-[9px] text-outline uppercase tracking-wider block mb-1">ĐỊA CHỈ API SERVER</label>
+        <input id="api-base-input" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-lg px-2 py-1 text-[11px] text-on-surface focus:border-primary/50 outline-none" type="text" placeholder="http://localhost:8000"/>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MOBILE TOP BAR ════════════════════════════════════════════════════════ -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface-dim/90 backdrop-blur-xl border-b border-outline-variant/20 flex justify-between items-center px-4 h-14 md:hidden">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:'FILL' 1;">graphic_eq</span>
+      <h1 class="font-headline-md text-base font-bold text-primary tracking-tight">AI Voice Studio</h1>
+    </div>
+    <!-- Theme toggle (mobile) -->
+    <label class="relative inline-flex items-center cursor-pointer">
+      <input id="theme-toggle-checkbox" class="sr-only peer" type="checkbox"/>
+      <div class="w-11 h-6 bg-surface-variant/50 glass-panel rounded-full peer transition-all duration-300 peer-checked:bg-primary/30 border border-outline-variant/30">
+        <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 peer-checked:translate-x-5 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings:'FILL' 1;">dark_mode</span>
+        </div>
+      </div>
+    </label>
+  </header>
+
+  <!-- ═══ MAIN CANVAS ═══════════════════════════════════════════════════════════ -->
+  <main id="main-canvas" class="h-screen overflow-y-auto bg-surface-container-lowest relative transition-all duration-300 mt-14 md:mt-0 pb-20 md:pb-0" style="margin-left:0;">
+
+    <!-- Theme toggle (desktop) -->
+    <div class="hidden md:flex fixed right-5 top-4 z-50 items-center">
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input id="theme-toggle-checkbox" class="sr-only peer" type="checkbox"/>
+        <div class="w-11 h-6 bg-surface-variant/50 glass-panel rounded-full peer transition-all duration-300 peer-checked:bg-primary/30 border border-outline-variant/30">
+          <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 peer-checked:translate-x-5 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings:'FILL' 1;">dark_mode</span>
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <!-- Ambient glow -->
+    <div class="absolute top-0 right-0 w-[350px] h-[350px] bg-primary/8 rounded-full blur-[90px] pointer-events-none"></div>
+    <div class="absolute bottom-0 left-[5%] w-[250px] h-[250px] bg-secondary/5 rounded-full blur-[70px] pointer-events-none"></div>
+
+    <div class="max-w-[1200px] mx-auto px-4 md:px-6 py-5 space-y-5">
+
+      <!-- ─── TTS PANEL ──────────────────────────────────────────────────────── -->
+      <section class="tab-panel active space-y-5" id="panel-tts">
+
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-surface-container-lowest/90 backdrop-blur-md -mx-4 md:-mx-6 px-4 md:px-6 pt-5 pb-3 border-b border-outline-variant/10">
+          <h2 class="font-headline-lg text-xl font-bold text-on-surface">Chuyển văn bản thành giọng nói (TTS)</h2>
+          <p class="font-body-md text-xs text-on-surface-variant mt-0.5">Sử dụng công nghệ AI của CapCut để tạo ra giọng nói tự nhiên, mượt mà đa ngôn ngữ.</p>
+        </header>
+
+        <!-- TTS Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+
+          <!-- Left: Input form -->
+          <section class="col-span-1 md:col-span-7">
+            <div class="glass-panel rounded-2xl p-4 md:p-5 space-y-4">
+
+              <!-- Textarea -->
+              <div class="space-y-2">
+                <label class="font-label-sm text-[10px] text-outline uppercase tracking-wider block">VĂN BẢN CẦN ĐỌC</label>
+                <div class="relative">
+                  <textarea id="tts-text"
+                    class="w-full h-44 md:h-56 bg-surface-container/50 border border-outline-variant/30 rounded-xl p-4 font-body-md text-sm text-on-surface focus:border-primary/60 focus:ring-2 focus:ring-primary/10 outline-none transition-all resize-none placeholder:text-outline/40 custom-scrollbar"
+                    placeholder="Nhập nội dung văn bản tại đây (Hỗ trợ tiếng Việt, Anh, Trung, Nhật, v.v.)..."></textarea>
+                  <div id="tts-char-count" class="absolute bottom-3 right-3 text-outline font-label-sm text-[10px] pointer-events-none">0 ký tự</div>
                 </div>
-            </label>
+              </div>
+
+              <!-- Speed slider -->
+              <div class="space-y-2.5 pt-0.5">
+                <div class="flex justify-between items-center">
+                  <label class="font-label-sm text-[10px] text-outline uppercase tracking-wider">
+                    TỐC ĐỘ ĐỌC (<span id="rate-val">1.0</span>X)
+                  </label>
+                  <div class="flex gap-1.5" id="speed-presets">
+                    <button class="preset-btn px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold border border-primary/30 hover:bg-primary/20 transition-colors" data-value="1.0">1x</button>
+                    <button class="preset-btn px-2 py-0.5 rounded bg-surface-variant/50 text-on-surface-variant text-[10px] font-bold border border-transparent hover:bg-primary/15 hover:text-primary transition-colors" data-value="1.5">1.5x</button>
+                    <button class="preset-btn px-2 py-0.5 rounded bg-surface-variant/50 text-on-surface-variant text-[10px] font-bold border border-transparent hover:bg-primary/15 hover:text-primary transition-colors" data-value="2.0">2x</button>
+                    <button class="preset-btn px-2 py-0.5 rounded bg-surface-variant/50 text-on-surface-variant text-[10px] font-bold border border-transparent hover:bg-primary/15 hover:text-primary transition-colors" data-value="3.0">3x</button>
+                  </div>
+                </div>
+                <input id="tts-rate-slider" class="range-slider" max="3.0" min="0.5" step="0.1" type="range" value="1.0"/>
+              </div>
+
+              <!-- CTA Button -->
+              <button id="btn-generate-tts" class="w-full py-3 primary-gradient rounded-xl font-headline-md text-base text-white font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[20px] btn-icon-symbol">play_circle</span>
+                <span class="btn-text">Bắt đầu tạo giọng nói</span>
+                <span class="loader-spinner hidden"></span>
+              </button>
+            </div>
+          </section>
+
+          <!-- Right: Voice selection + player -->
+          <aside class="col-span-1 md:col-span-5">
+            <div class="glass-panel rounded-2xl p-4 md:p-5 h-[420px] md:h-[440px] flex flex-col gap-3">
+
+              <!-- Search & Filter -->
+              <div class="space-y-2">
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[16px]">search</span>
+                  <input id="voice-search" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-lg py-2 pl-9 pr-3 font-body-md text-sm text-on-surface focus:border-primary/50 outline-none transition-all" placeholder="Tìm kiếm giọng đọc..." type="text"/>
+                </div>
+                <div class="relative w-full">
+                  <select id="lang-select" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-lg py-1.5 pl-3 pr-7 font-body-md text-xs text-on-surface focus:border-primary/50 outline-none transition-all appearance-none cursor-pointer">
+                    <option value="all">Tất cả ngôn ngữ</option>
+                    <option value="vi-VN">Tiếng Việt</option>
+                    <option value="en-US">Tiếng Anh</option>
+                    <option value="zh-CN">Tiếng Trung</option>
+                    <option value="ja-JP">Tiếng Nhật</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[16px]">expand_more</span>
+                </div>
+              </div>
+
+              <!-- Voice list -->
+              <div class="flex-grow overflow-y-auto custom-scrollbar space-y-1.5 pr-1" id="voice-list-container">
+                <div class="voices-loader text-center py-12 text-outline/40 font-body-md text-sm">Đang tải giọng đọc...</div>
+              </div>
+
+              <!-- Preview player (desktop) -->
+              <div id="tts-output-card" class="hidden md:block mt-auto">
+                <div class="p-3 bg-surface-container-high rounded-xl border border-outline-variant/20 space-y-2">
+                  <div class="flex justify-between items-center">
+                    <span id="preview-voice-name" class="font-label-sm text-[10px] text-primary font-bold uppercase">PREVIEWING: —</span>
+                    <span id="preview-time-display" class="text-[9px] text-outline font-mono">00:00</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <button id="btn-play-pause" class="w-7 h-7 rounded-full primary-gradient text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shrink-0">
+                      <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1;">play_arrow</span>
+                    </button>
+                    <div class="waveform-container flex-grow" id="waveform-visualizer">
+                      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+                      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+                      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+                      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+                      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+                      <div class="waveform-bar"></div><div class="waveform-bar"></div>
+                    </div>
+                    <audio id="tts-audio" class="hidden"></audio>
+                  </div>
+                  <div class="flex gap-2">
+                    <a id="btn-download-audio" href="#" target="_blank"
+                       class="flex-1 py-1.5 bg-surface-variant/60 hover:bg-surface-variant text-on-surface-variant hover:text-on-surface text-center font-label-sm text-[10px] rounded-lg border border-outline-variant/20 transition-colors flex items-center justify-center gap-1">
+                      <span class="material-symbols-outlined text-[12px]">download</span> Tải về
+                    </a>
+                    <button id="btn-copy-audio-url"
+                       class="flex-1 py-1.5 bg-surface-variant/60 hover:bg-surface-variant text-on-surface-variant hover:text-on-surface text-center font-label-sm text-[10px] rounded-lg border border-outline-variant/20 transition-colors flex items-center justify-center gap-1">
+                      <span class="material-symbols-outlined text-[12px]">link</span> Sao chép
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </aside>
         </div>
 
-        <!-- Subtle Ambient Background -->
-        <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
-        <div class="absolute bottom-[-10%] left-[5%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none"></div>
-        
-        <div class="max-w-[1200px] mx-auto">
-            
-            <!-- TTS Tab Panel -->
-            <section class="tab-panel active space-y-10" id="panel-tts">
-                <!-- Header -->
-                <header class="sticky top-0 z-20 bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant/10 -mx-4 md:-mx-10 px-4 md:px-10 pt-6 md:pt-10 pb-4 md:pb-6 space-y-2">
-                    <h2 class="font-headline-lg text-headline-lg text-on-surface">Chuyển văn bản thành giọng nói (TTS)</h2>
-                    <p class="font-body-md text-body-md text-on-surface-variant">Sử dụng công nghệ AI của CapCut để tạo ra giọng nói tự nhiên, mượt mà đa ngôn ngữ.</p>
-                </header>
-                
-                <!-- Workspace Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <!-- Left: TTS Input Form -->
-                    <div class="col-span-1 md:col-span-7 space-y-6">
-                        <div class="glass-panel rounded-3xl p-4 md:p-8 space-y-6">
-                            <div class="space-y-3">
-                                <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider block">VĂN BẢN CẦN ĐỌC</label>
-                                <div class="relative group">
-                                    <textarea id="tts-text" class="w-full h-48 md:h-72 bg-surface-container/50 border border-outline-variant/30 rounded-2xl p-4 md:p-6 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-4 focus:ring-primary/10 outline-none transition-all resize-none placeholder:text-outline/50 custom-scrollbar" placeholder="Nhập nội dung văn bản tại đây (Hỗ trợ tiếng Việt, Anh, Trung, Nhật, v.v.). Nhấn Tạo giọng nói để nghe thử..."></textarea>
-                                    <div id="tts-char-count" class="absolute bottom-4 right-6 text-outline font-label-sm text-label-sm">
-                                        0 ký tự
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Reading Speed Slider -->
-                            <div class="space-y-4 pt-2">
-                                <div class="flex justify-between items-center">
-                                    <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider">TỐC ĐỘ ĐỌC (<span id="rate-val">1.0</span>X)</label>
-                                    <div class="flex gap-2" id="speed-presets">
-                                        <button class="preset-btn px-3 py-1 rounded-lg bg-primary/10 text-primary text-label-sm font-bold hover:bg-primary/20 transition-all border border-primary/30" data-value="1.0">1x</button>
-                                        <button class="preset-btn px-3 py-1 rounded-lg bg-surface-variant/50 text-on-surface-variant text-label-sm font-bold hover:bg-primary/20 hover:text-primary transition-all border border-transparent" data-value="1.5">1.5x</button>
-                                        <button class="preset-btn px-3 py-1 rounded-lg bg-surface-variant/50 text-on-surface-variant text-label-sm font-bold hover:bg-primary/20 hover:text-primary transition-all border border-transparent" data-value="2.0">2x</button>
-                                        <button class="preset-btn px-3 py-1 rounded-lg bg-surface-variant/50 text-on-surface-variant text-label-sm font-bold hover:bg-primary/20 hover:text-primary transition-all border border-transparent" data-value="3.0">3x</button>
-                                    </div>
-                                </div>
-                                <input id="tts-rate-slider" class="range-slider" max="3.0" min="0.5" step="0.1" type="range" value="1.0"/>
-                            </div>
-                            <!-- CTA Button -->
-                            <button id="btn-generate-tts" class="w-full py-4 primary-gradient rounded-2xl font-headline-md text-headline-md text-white font-bold shadow-xl shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
-                                <span class="material-symbols-outlined btn-icon-symbol">play_circle</span>
-                                <span class="btn-text">Bắt đầu tạo giọng nói</span>
-                                <span class="loader-spinner hidden"></span>
-                            </button>
-                        </div>
+        <!-- Features footer -->
+        <footer class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="glass-panel p-4 rounded-xl flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+              <span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
+            </div>
+            <div>
+              <h5 class="font-body-md text-sm font-bold text-on-surface">Tối ưu hóa ngắt nghỉ</h5>
+              <p class="text-xs text-on-surface-variant mt-0.5">AI tự động phân tích ngữ cảnh để chèn khoảng nghỉ tự nhiên.</p>
+            </div>
+          </div>
+          <div class="glass-panel p-4 rounded-xl flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-secondary/10 text-secondary shrink-0">
+              <span class="material-symbols-outlined text-[18px]">translate</span>
+            </div>
+            <div>
+              <h5 class="font-body-md text-sm font-bold text-on-surface">Đa ngôn ngữ 40+</h5>
+              <p class="text-xs text-on-surface-variant mt-0.5">Hỗ trợ hàng chục ngôn ngữ và phương ngữ địa phương.</p>
+            </div>
+          </div>
+          <div class="glass-panel p-4 rounded-xl flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-tertiary/10 text-tertiary shrink-0">
+              <span class="material-symbols-outlined text-[18px]">high_quality</span>
+            </div>
+            <div>
+              <h5 class="font-body-md text-sm font-bold text-on-surface">Chất lượng 48kHz</h5>
+              <p class="text-xs text-on-surface-variant mt-0.5">Âm thanh chuẩn phòng thu, không tạp âm, rõ ràng tuyệt đối.</p>
+            </div>
+          </div>
+        </footer>
+
+        <!-- History Table -->
+        <section class="glass-panel rounded-2xl p-4 md:p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-headline-md text-sm font-bold text-on-surface uppercase tracking-wider">Lịch sử tạo giọng nói</h3>
+            <button class="text-[10px] text-primary hover:underline font-bold">Xem tất cả</button>
+          </div>
+          <div class="overflow-hidden rounded-xl border border-outline-variant/20">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-surface-container-high/50 border-b border-outline-variant/20">
+                  <th class="px-4 py-2 font-label-sm text-[10px] text-outline uppercase tracking-wider">Nội dung</th>
+                  <th class="px-4 py-2 font-label-sm text-[10px] text-outline uppercase tracking-wider hidden sm:table-cell">Giọng đọc</th>
+                  <th class="px-4 py-2 font-label-sm text-[10px] text-outline uppercase tracking-wider hidden md:table-cell">Ngày tạo</th>
+                  <th class="px-4 py-2 font-label-sm text-[10px] text-outline uppercase tracking-wider text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/10" id="history-tbody">
+                <tr class="history-row">
+                  <td class="text-sm text-on-surface-variant max-w-[200px] md:max-w-[300px] truncate">Chào mừng bạn đến với AI Voice Studio...</td>
+                  <td class="text-sm text-on-surface hidden sm:table-cell">Thanh Vy</td>
+                  <td class="text-xs text-outline hidden md:table-cell">01/07/2026</td>
+                  <td class="text-right">
+                    <div class="flex justify-end gap-1.5">
+                      <button class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[14px]">play_arrow</span>
+                      </button>
+                      <button class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[14px]">download</span>
+                      </button>
                     </div>
-                    
-                    <!-- Right: Voice Selection & Preview Player -->
-                    <aside class="col-span-1 md:col-span-5 space-y-6">
-                        <div class="glass-panel rounded-3xl p-4 md:p-6 h-[560px] md:h-[640px] flex flex-col gap-6">
-                            <!-- Search & Filters -->
-                            <div class="space-y-4">
-                                <div class="relative">
-                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
-                                    <input id="voice-search" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 font-body-md text-body-md text-on-surface focus:border-primary/50 outline-none transition-all" placeholder="Tìm kiếm giọng đọc..." type="text"/>
-                                </div>
-                                <!-- Language Select Dropdown -->
-                                <div class="relative w-full">
-                                    <select id="lang-select" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl py-2.5 pl-4 pr-10 font-body-md text-sm text-on-surface focus:border-primary/50 outline-none transition-all appearance-none cursor-pointer">
-                                        <option value="all">Tất cả ngôn ngữ</option>
-                                        <option value="vi-VN">Tiếng Việt</option>
-                                        <option value="en-US">Tiếng Anh</option>
-                                        <option value="zh-CN">Tiếng Trung</option>
-                                        <option value="ja-JP">Tiếng Nhật</option>
-                                    </select>
-                                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[20px]">expand_more</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Voice List scroll area -->
-                            <div class="flex-grow overflow-y-auto custom-scrollbar space-y-3 pr-2" id="voice-list-container">
-                                <div class="voices-loader text-center py-20 text-outline/50 font-body-md">Đang tải danh sách giọng đọc...</div>
-                            </div>
-                            
-                            <!-- Preview Waveform Area (Desktop Player, hidden on mobile) -->
-                            <div id="tts-output-card" class="hidden md:flex mt-auto p-4 bg-surface-container-high rounded-2xl border border-outline-variant/20 flex-col gap-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-label-sm text-xs text-primary font-bold uppercase" id="preview-voice-name">PREVIEWING: THANH VY</span>
-                                    <span class="text-[10px] text-outline font-mono" id="preview-time-display">00:00</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-4">
-                                    <!-- Custom Trigger Play Button -->
-                                    <button id="btn-play-pause" class="w-8 h-8 rounded-full primary-gradient text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
-                                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-                                    </button>
-                                    
-                                    <!-- Animated Waveform -->
-                                    <div class="waveform-container flex-grow" id="waveform-visualizer">
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                        <div class="waveform-bar"></div>
-                                    </div>
-                                    
-                                    <!-- Utility Audio elements (Hidden) -->
-                                    <audio id="tts-audio" class="hidden"></audio>
-                                </div>
-                                <div class="flex gap-2 mt-1">
-                                    <a id="btn-download-audio" class="flex-grow py-2 bg-surface-variant hover:bg-surface-variant/80 text-on-surface-variant hover:text-on-surface text-center font-label-sm text-xs rounded-lg border border-outline-variant/20 transition-all flex items-center justify-center gap-1" href="#" target="_blank">
-                                        <span class="material-symbols-outlined text-xs">download</span>
-                                        Tải về
-                                    </a>
-                                    <button id="btn-copy-audio-url" class="flex-grow py-2 bg-surface-variant hover:bg-surface-variant/80 text-on-surface-variant hover:text-on-surface text-center font-label-sm text-xs rounded-lg border border-outline-variant/20 transition-all flex items-center justify-center gap-1">
-                                        <span class="material-symbols-outlined text-xs">link</span>
-                                        Sao chép
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
+                  </td>
+                </tr>
+                <tr class="history-row">
+                  <td class="text-sm text-on-surface-variant max-w-[200px] md:max-w-[300px] truncate">Bản tin thời sự sáng nay có nội dung chính...</td>
+                  <td class="text-sm text-on-surface hidden sm:table-cell">Minh Quân</td>
+                  <td class="text-xs text-outline hidden md:table-cell">30/06/2026</td>
+                  <td class="text-right">
+                    <div class="flex justify-end gap-1.5">
+                      <button class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[14px]">play_arrow</span>
+                      </button>
+                      <button class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[14px]">download</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </section><!-- /panel-tts -->
+
+      <!-- ─── STT PANEL ──────────────────────────────────────────────────────── -->
+      <section class="tab-panel hidden space-y-5" id="panel-stt">
+
+        <header class="sticky top-0 z-20 bg-surface-container-lowest/90 backdrop-blur-md -mx-4 md:-mx-6 px-4 md:px-6 pt-5 pb-3 border-b border-outline-variant/10">
+          <h2 class="font-headline-lg text-xl font-bold text-on-surface">Nhận diện phụ đề &amp; Âm thanh (STT)</h2>
+          <p class="font-body-md text-xs text-on-surface-variant mt-0.5">Tải file âm thanh/video lên để nhận diện tự động và trích xuất phụ đề chi tiết.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <!-- Left: Upload + config -->
+          <div class="col-span-1 md:col-span-7">
+            <div class="glass-panel rounded-2xl p-4 md:p-5 space-y-4">
+              <h3 class="font-headline-md text-base font-semibold text-primary">Tải lên File âm thanh / video</h3>
+
+              <!-- Dropzone -->
+              <div class="upload-zone rounded-xl p-8 text-center cursor-pointer flex flex-col items-center justify-center gap-3" id="stt-dropzone">
+                <input type="file" id="stt-file-input" accept="audio/*,video/*" class="hidden"/>
+                <div class="dropzone-content flex flex-col items-center gap-2">
+                  <span class="material-symbols-outlined text-3xl text-primary">upload_file</span>
+                  <p class="font-body-md text-sm font-bold text-on-surface">Kéo thả file vào đây</p>
+                  <p class="text-xs text-outline">MP3, WAV, M4A, MP4 — Tối đa 50MB</p>
                 </div>
-                
-                <!-- Features info footer -->
-                <footer class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-panel p-6 rounded-2xl flex items-start gap-4">
-                        <div class="p-3 rounded-xl bg-primary/10 text-primary">
-                            <span class="material-symbols-outlined">auto_fix_high</span>
-                        </div>
-                        <div>
-                            <h5 class="font-body-md font-bold text-on-surface">Tối ưu hóa ngắt nghỉ</h5>
-                            <p class="text-sm text-on-surface-variant mt-1">AI tự động phân tích ngữ cảnh để chèn các khoảng nghỉ tự nhiên nhất.</p>
-                        </div>
+                <div class="selected-file-info hidden flex items-center justify-between bg-surface-container-high/50 p-3 rounded-xl border border-outline-variant/20 w-full" id="file-info-container">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-secondary text-[20px]">audio_file</span>
+                    <div class="text-left">
+                      <div class="font-body-md font-semibold text-sm max-w-[160px] md:max-w-[260px] truncate" id="selected-file-name">audio.mp3</div>
+                      <div class="text-xs text-outline" id="selected-file-size">0 Bytes</div>
                     </div>
-                    <div class="glass-panel p-6 rounded-2xl flex items-start gap-4">
-                        <div class="p-3 rounded-xl bg-secondary/10 text-secondary">
-                            <span class="material-symbols-outlined">translate</span>
-                        </div>
-                        <div>
-                            <h5 class="font-body-md font-bold text-on-surface">Đa ngôn ngữ 40+</h5>
-                            <p class="text-sm text-on-surface-variant mt-1">Hỗ trợ hàng chục ngôn ngữ và phương ngữ địa phương trên toàn thế giới.</p>
-                        </div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-2xl flex items-start gap-4">
-                        <div class="p-3 rounded-xl bg-tertiary/10 text-tertiary">
-                            <span class="material-symbols-outlined">high_quality</span>
-                        </div>
-                        <div>
-                            <h5 class="font-body-md font-bold text-on-surface">Chất lượng 48kHz</h5>
-                            <p class="text-sm text-on-surface-variant mt-1">Âm thanh đầu ra chuẩn phòng thu, không tạp âm và rõ ràng tuyệt đối.</p>
-                        </div>
-                    </div>
-                </footer>
-            </section>
-            
-            <!-- STT Tab Panel -->
-            <section class="tab-panel space-y-10 hidden" id="panel-stt">
-                <!-- Header -->
-                <header class="sticky top-0 z-20 bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant/10 -mx-4 md:-mx-10 px-4 md:px-10 pt-6 md:pt-10 pb-4 md:pb-6 space-y-2">
-                    <h2 class="font-headline-lg text-headline-lg text-on-surface">Nhận diện phụ đề & Âm thanh (STT)</h2>
-                    <p class="font-body-md text-body-md text-on-surface-variant">Tải file âm thanh/video lên để nhận diện tự động và trích xuất phụ đề chi tiết có mốc thời gian.</p>
-                </header>
-
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <!-- Left: Upload zone & configuration -->
-                    <div class="col-span-1 md:col-span-7 space-y-6">
-                        <div class="glass-panel rounded-3xl p-4 md:p-8 space-y-6">
-                            <h3 class="font-headline-md text-xl font-semibold text-primary">Tải lên File âm thanh / video</h3>
-                            
-                            <!-- File Dropzone -->
-                            <div class="upload-zone rounded-2xl p-8 md:p-12 text-center cursor-pointer flex flex-col items-center justify-center gap-4" id="stt-dropzone">
-                                <input type="file" id="stt-file-input" accept="audio/*,video/*" class="hidden">
-                                
-                                <div class="dropzone-content flex flex-col items-center gap-2">
-                                    <span class="material-symbols-outlined text-4xl text-primary">upload_file</span>
-                                    <p class="font-body-md font-bold text-on-surface">Kéo thả file âm thanh/video vào đây</p>
-                                    <p class="text-xs text-outline">Hỗ trợ MP3, WAV, M4A, MP4, v.v. (Tối đa 50MB)</p>
-                                </div>
-                                
-                                <div class="selected-file-info hidden flex items-center justify-between bg-surface-container-high/50 p-4 rounded-xl border border-outline-variant/20 w-full" id="file-info-container">
-                                    <div class="flex items-center gap-3">
-                                        <span class="material-symbols-outlined text-secondary">audio_file</span>
-                                        <div class="text-left">
-                                            <div class="font-body-md font-semibold text-sm max-w-[180px] md:max-w-[280px] truncate" id="selected-file-name">audio.mp3</div>
-                                            <div class="text-xs text-outline" id="selected-file-size">0 Bytes</div>
-                                        </div>
-                                    </div>
-                                    <button class="text-outline hover:text-error transition-colors" id="btn-remove-file">
-                                        <span class="material-symbols-outlined text-lg">close</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="space-y-4">
-                                <!-- Language select -->
-                                <div class="space-y-2">
-                                    <label for="stt-language" class="font-label-sm text-outline uppercase tracking-wider block">Ngôn ngữ gốc của âm thanh</label>
-                                    <select id="stt-language" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl p-3.5 font-body-md text-body-md text-on-surface outline-none focus:border-primary">
-                                        <option value="vi-VN">Tiếng Việt (vi-VN)</option>
-                                        <option value="en-US">Tiếng Anh (en-US)</option>
-                                        <option value="zh-CN">Tiếng Trung (zh-CN)</option>
-                                        <option value="ja-JP">Tiếng Nhật (ja-JP)</option>
-                                        <option value="fr-FR">Tiếng Pháp (fr-FR)</option>
-                                        <option value="es-ES">Tiếng Tây Ban Nha (es-ES)</option>
-                                        <option value="id-ID">Tiếng Indonesia (id-ID)</option>
-                                        <option value="th-TH">Tiếng Thái (th-TH)</option>
-                                    </select>
-                                </div>
-
-                                <!-- Translate settings checkbox -->
-                                <div class="flex items-center gap-3">
-                                    <input type="checkbox" id="stt-use-translation" class="w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-primary/20 bg-surface-container/50 cursor-pointer">
-                                    <label for="stt-use-translation" class="font-body-md text-sm text-on-surface cursor-pointer select-none">Dịch phụ đề tự động (Translate)</label>
-                                </div>
-
-                                <!-- Target translated language select -->
-                                <div class="space-y-2 hidden" id="translation-lang-group">
-                                    <label for="stt-translation-language" class="font-label-sm text-outline uppercase tracking-wider block">Ngôn ngữ dịch đích</label>
-                                    <select id="stt-translation-language" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl p-3.5 font-body-md text-body-md text-on-surface outline-none focus:border-primary">
-                                        <option value="vi-VN">Tiếng Việt (vi-VN)</option>
-                                        <option value="en-US">Tiếng Anh (en-US)</option>
-                                        <option value="zh-CN">Tiếng Trung (zh-CN)</option>
-                                        <option value="ja-JP">Tiếng Nhật (ja-JP)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <button id="btn-generate-stt" class="w-full py-4 primary-gradient rounded-2xl font-headline-md text-headline-md text-white font-bold shadow-xl shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3" disabled>
-                                <span class="material-symbols-outlined">hearing</span>
-                                <span class="btn-text">Bắt đầu nhận diện</span>
-                                <span class="loader-spinner hidden"></span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Right: Progress bar & transcript outputs -->
-                    <div class="col-span-1 md:col-span-5 space-y-6">
-                        <div class="glass-panel rounded-3xl p-4 md:p-6 h-[500px] md:h-[640px] flex flex-col gap-4">
-                            <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
-                                <h3 class="font-body-md font-bold text-on-surface">Kết quả phụ đề</h3>
-                                <!-- Actions -->
-                                <div class="flex gap-2 hidden" id="stt-actions-container">
-                                    <button id="btn-copy-transcript" class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-variant hover:bg-surface-variant/80 text-on-surface-variant hover:text-on-surface text-xs font-semibold rounded-lg transition-colors border border-outline-variant/20">
-                                        <span class="material-symbols-outlined text-xs">content_copy</span>
-                                        <span>Sao chép</span>
-                                    </button>
-                                    <button id="btn-download-srt" class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-variant hover:bg-surface-variant/80 text-on-surface-variant hover:text-on-surface text-xs font-semibold rounded-lg transition-colors border border-outline-variant/20">
-                                        <span class="material-symbols-outlined text-xs">subtitles</span>
-                                        <span>Xuất SRT</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Progress Indicator -->
-                            <div class="p-4 bg-surface-container-high/40 border border-outline-variant/20 rounded-2xl space-y-3 hidden" id="stt-progress">
-                                <div class="flex justify-between font-label-sm text-xs">
-                                    <span id="stt-status-label" class="text-outline">Đang tải file...</span>
-                                    <span id="stt-percent-label" class="text-primary font-bold">5%</span>
-                                </div>
-                                <div class="w-full bg-surface-variant h-2 rounded-full overflow-hidden">
-                                    <div id="stt-progress-fill" class="h-full primary-gradient w-[5%] transition-all duration-300"></div>
-                                </div>
-                            </div>
-
-                            <!-- Transcript list block -->
-                            <div class="flex-grow overflow-y-auto custom-scrollbar space-y-2 pr-2" id="transcript-container">
-                                <div class="transcript-empty flex flex-col items-center justify-center h-full py-20 text-center text-outline/30 space-y-3">
-                                    <span class="material-symbols-outlined text-5xl">transcribe</span>
-                                    <p class="font-body-md text-sm">Chưa có dữ liệu. Tải lên file âm thanh để nhận diện.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  </div>
+                  <button class="text-outline hover:text-error transition-colors" id="btn-remove-file">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                  </button>
                 </div>
-            </section>
-            
-            <!-- Docs Tab Panel -->
-            <section class="tab-panel space-y-10 hidden" id="panel-docs">
-                <!-- Header -->
-                <header class="sticky top-0 z-20 bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant/10 -mx-4 md:-mx-10 px-4 md:px-10 pt-6 md:pt-10 pb-4 md:pb-6 space-y-2">
-                    <h2 class="font-headline-lg text-headline-lg text-on-surface">Tài liệu hướng dẫn API</h2>
-                    <p class="font-body-md text-body-md text-on-surface-variant">Tích hợp dịch vụ CapCut TTS & STT trực tiếp vào ứng dụng của bạn một cách nhanh chóng.</p>
-                </header>
+              </div>
 
-                <div class="space-y-8 max-w-[900px]">
-                    <!-- API Connection Settings -->
-                    <div class="glass-panel rounded-3xl p-4 md:p-8 space-y-4">
-                        <h3 class="font-headline-md text-xl font-bold text-primary">Cấu hình kết nối API Server</h3>
-                        <p class="font-body-md text-sm text-on-surface-variant">Nhập địa chỉ API Server của bạn (ví dụ: <code>http://localhost:8000</code> hoặc link máy chủ cloud). Để trống nếu chạy trực tiếp trên cùng một máy chủ backend.</p>
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <input id="api-base-input-docs" class="flex-grow bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:border-primary/50 outline-none" type="text" placeholder="Ví dụ: http://localhost:8000"/>
-                            <button id="btn-save-api-base" class="px-6 py-3 primary-gradient rounded-xl font-body-md text-sm text-white font-bold hover:brightness-110 active:scale-[0.98] transition-all shrink-0">Lưu kết nối</button>
-                        </div>
-                    </div>
+              <div class="space-y-3">
+                <!-- Language -->
+                <div class="space-y-1.5">
+                  <label class="font-label-sm text-[10px] text-outline uppercase tracking-wider block">Ngôn ngữ gốc của âm thanh</label>
+                  <select id="stt-language" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl p-3 font-body-md text-sm text-on-surface outline-none focus:border-primary">
+                    <option value="vi-VN">Tiếng Việt (vi-VN)</option>
+                    <option value="en-US">Tiếng Anh (en-US)</option>
+                    <option value="zh-CN">Tiếng Trung (zh-CN)</option>
+                    <option value="ja-JP">Tiếng Nhật (ja-JP)</option>
+                    <option value="fr-FR">Tiếng Pháp (fr-FR)</option>
+                    <option value="es-ES">Tiếng Tây Ban Nha (es-ES)</option>
+                    <option value="id-ID">Tiếng Indonesia (id-ID)</option>
+                    <option value="th-TH">Tiếng Thái (th-TH)</option>
+                  </select>
+                </div>
+                <!-- Translate toggle -->
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" id="stt-use-translation" class="w-4 h-4 rounded border-outline-variant/30 text-primary focus:ring-primary/20 bg-surface-container/50 cursor-pointer"/>
+                  <label for="stt-use-translation" class="font-body-md text-sm text-on-surface cursor-pointer select-none">Dịch phụ đề tự động</label>
+                </div>
+                <!-- Translation target lang -->
+                <div class="space-y-1.5 hidden" id="translation-lang-group">
+                  <label class="font-label-sm text-[10px] text-outline uppercase tracking-wider block">Ngôn ngữ dịch đích</label>
+                  <select id="stt-translation-language" class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl p-3 font-body-md text-sm text-on-surface outline-none focus:border-primary">
+                    <option value="vi-VN">Tiếng Việt</option>
+                    <option value="en-US">Tiếng Anh</option>
+                    <option value="zh-CN">Tiếng Trung</option>
+                    <option value="ja-JP">Tiếng Nhật</option>
+                  </select>
+                </div>
+              </div>
 
-                    <!-- Endpoint 1 -->
-                    <div class="glass-panel rounded-3xl p-4 md:p-8 space-y-4">
-                        <h3 class="font-headline-md text-xl font-bold text-primary">1. Chuyển văn bản thành giọng nói (TTS)</h3>
-                        <div class="flex items-center gap-3 bg-surface-container-lowest/50 border border-outline-variant/20 p-3 rounded-xl font-mono text-sm w-fit">
-                            <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded text-xs font-bold uppercase">POST</span>
-                            <span class="text-on-surface-variant">/api/tts</span>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            <h4 class="font-body-md font-semibold text-on-surface">Cấu trúc yêu cầu (JSON Payload):</h4>
-                            <pre class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 overflow-x-auto"><code class="language-json text-yellow-200">{
+              <button id="btn-generate-stt" class="w-full py-3 primary-gradient rounded-xl font-headline-md text-base text-white font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2" disabled>
+                <span class="material-symbols-outlined text-[20px]">hearing</span>
+                <span class="btn-text">Bắt đầu nhận diện</span>
+                <span class="loader-spinner hidden"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Results -->
+          <div class="col-span-1 md:col-span-5">
+            <div class="glass-panel rounded-2xl p-4 md:p-5 h-[480px] md:h-[500px] flex flex-col gap-3">
+              <div class="flex justify-between items-center border-b border-outline-variant/20 pb-2.5">
+                <h3 class="font-body-md text-sm font-bold text-on-surface">Kết quả phụ đề</h3>
+                <div class="flex gap-2 hidden" id="stt-actions-container">
+                  <button id="btn-copy-transcript" class="flex items-center gap-1 px-2.5 py-1 bg-surface-variant/60 hover:bg-surface-variant text-on-surface-variant hover:text-on-surface text-[11px] font-semibold rounded-lg transition-colors border border-outline-variant/20">
+                    <span class="material-symbols-outlined text-[12px]">content_copy</span> Sao chép
+                  </button>
+                  <button id="btn-download-srt" class="flex items-center gap-1 px-2.5 py-1 bg-surface-variant/60 hover:bg-surface-variant text-on-surface-variant hover:text-on-surface text-[11px] font-semibold rounded-lg transition-colors border border-outline-variant/20">
+                    <span class="material-symbols-outlined text-[12px]">subtitles</span> Xuất SRT
+                  </button>
+                </div>
+              </div>
+
+              <!-- Progress -->
+              <div class="p-3 bg-surface-container-high/40 border border-outline-variant/20 rounded-xl space-y-2 hidden" id="stt-progress">
+                <div class="flex justify-between font-label-sm text-[10px]">
+                  <span id="stt-status-label" class="text-outline">Đang tải file...</span>
+                  <span id="stt-percent-label" class="text-primary font-bold">5%</span>
+                </div>
+                <div class="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+                  <div id="stt-progress-fill" class="h-full primary-gradient w-[5%] transition-all duration-300 rounded-full"></div>
+                </div>
+              </div>
+
+              <!-- Transcript -->
+              <div class="flex-grow overflow-y-auto custom-scrollbar space-y-1.5 pr-1" id="transcript-container">
+                <div class="transcript-empty flex flex-col items-center justify-center h-full py-12 text-center text-outline/25 space-y-2">
+                  <span class="material-symbols-outlined text-4xl">transcribe</span>
+                  <p class="font-body-md text-xs">Chưa có dữ liệu. Tải lên file âm thanh để nhận diện.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section><!-- /panel-stt -->
+
+      <!-- ─── DOCS PANEL ─────────────────────────────────────────────────────── -->
+      <section class="tab-panel hidden space-y-5" id="panel-docs">
+
+        <header class="sticky top-0 z-20 bg-surface-container-lowest/90 backdrop-blur-md -mx-4 md:-mx-6 px-4 md:px-6 pt-5 pb-3 border-b border-outline-variant/10">
+          <h2 class="font-headline-lg text-xl font-bold text-on-surface">Tài liệu hướng dẫn API</h2>
+          <p class="font-body-md text-xs text-on-surface-variant mt-0.5">Tích hợp dịch vụ CapCut TTS &amp; STT trực tiếp vào ứng dụng của bạn.</p>
+        </header>
+
+        <div class="space-y-5 max-w-[860px]">
+          <!-- API Server Config -->
+          <div class="glass-panel rounded-2xl p-4 md:p-5 space-y-3">
+            <h3 class="font-headline-md text-base font-bold text-primary">Cấu hình kết nối API Server</h3>
+            <p class="font-body-md text-xs text-on-surface-variant">Nhập địa chỉ API Server (ví dụ: <code class="bg-surface-container px-1 py-0.5 rounded text-primary text-[11px]">http://localhost:8000</code>). Để trống nếu chạy cùng server.</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input id="api-base-input-docs" class="flex-grow bg-surface-container/50 border border-outline-variant/30 rounded-xl px-3 py-2.5 text-sm text-on-surface focus:border-primary/50 outline-none" type="text" placeholder="http://localhost:8000"/>
+              <button id="btn-save-api-base" class="px-5 py-2.5 primary-gradient rounded-xl font-body-md text-sm text-white font-bold hover:brightness-110 active:scale-[0.98] transition-all shrink-0">Lưu kết nối</button>
+            </div>
+          </div>
+
+          <!-- TTS Endpoint -->
+          <div class="glass-panel rounded-2xl p-4 md:p-5 space-y-3">
+            <h3 class="font-headline-md text-base font-bold text-primary">1. Chuyển văn bản thành giọng nói (TTS)</h3>
+            <div class="flex items-center gap-2 bg-surface-container-lowest/50 border border-outline-variant/20 p-2.5 rounded-lg font-mono text-sm w-fit">
+              <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded text-xs font-bold uppercase">POST</span>
+              <span class="text-on-surface-variant text-xs">/api/tts</span>
+            </div>
+            <div class="space-y-1.5">
+              <h4 class="font-body-md text-xs font-semibold text-on-surface">JSON Payload:</h4>
+              <pre class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10 overflow-x-auto text-xs"><code class="text-yellow-200">{
   "text": "Xin chào thế giới",
   "voice": "BV074_streaming",
-  "rate": 1.0 // Tốc độ từ 0.5 đến 3.0
+  "rate": 1.0
 }</code></pre>
-                        </div>
-
-                        <div class="space-y-2">
-                            <h4 class="font-body-md font-semibold text-on-surface">Mẫu Fetch API (JavaScript):</h4>
-                            <pre class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 overflow-x-auto"><code class="javascript text-blue-300">fetch('http://127.0.0.1:8000/api/tts', {
+            </div>
+            <div class="space-y-1.5">
+              <h4 class="font-body-md text-xs font-semibold text-on-surface">Fetch API (JavaScript):</h4>
+              <pre class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10 overflow-x-auto text-xs"><code class="text-blue-300">fetch('http://127.0.0.1:8000/api/tts', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    text: "Xin chào thế giới",
-    voice: "BV074_streaming"
-  })
+  body: JSON.stringify({ text: "Xin chào", voice: "BV074_streaming" })
 })
 .then(res => res.json())
 .then(data => console.log("Speech URL:", data.speech_url));</code></pre>
-                        </div>
-                    </div>
+            </div>
+          </div>
 
-                    <!-- Endpoint 2 -->
-                    <div class="glass-panel rounded-3xl p-4 md:p-8 space-y-4">
-                        <h3 class="font-headline-md text-xl font-bold text-primary">2. Nhận diện giọng nói (STT)</h3>
-                        <div class="flex items-center gap-3 bg-surface-container-lowest/50 border border-outline-variant/20 p-3 rounded-xl font-mono text-sm w-fit">
-                            <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded text-xs font-bold uppercase">POST</span>
-                            <span class="text-on-surface-variant">/api/stt</span>
-                        </div>
-                        <p class="font-body-md text-sm text-on-surface-variant">Sử dụng định dạng truyền tải <code>multipart/form-data</code> để tải tệp tin lên.</p>
-                        
-                        <div class="space-y-2">
-                            <h4 class="font-body-md font-semibold text-on-surface">Mẫu tích hợp (Python requests):</h4>
-                            <pre class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/10 overflow-x-auto"><code class="python text-green-300">import requests
+          <!-- STT Endpoint -->
+          <div class="glass-panel rounded-2xl p-4 md:p-5 space-y-3">
+            <h3 class="font-headline-md text-base font-bold text-primary">2. Nhận diện giọng nói (STT)</h3>
+            <div class="flex items-center gap-2 bg-surface-container-lowest/50 border border-outline-variant/20 p-2.5 rounded-lg font-mono text-sm w-fit">
+              <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded text-xs font-bold uppercase">POST</span>
+              <span class="text-on-surface-variant text-xs">/api/stt</span>
+            </div>
+            <p class="font-body-md text-xs text-on-surface-variant">Sử dụng <code class="bg-surface-container px-1 py-0.5 rounded text-primary text-[11px]">multipart/form-data</code>.</p>
+            <div class="space-y-1.5">
+              <h4 class="font-body-md text-xs font-semibold text-on-surface">Python requests:</h4>
+              <pre class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10 overflow-x-auto text-xs"><code class="text-green-300">import requests
 
 url = "http://127.0.0.1:8000/api/stt"
 files = {'file': open('audio.mp3', 'rb')}
-data = {
-    'language': 'vi-VN',
-    'use_translation': 'false'
-}
+data = {'language': 'vi-VN', 'use_translation': 'false'}
 
 response = requests.post(url, files=files, data=data)
-result = response.json()
-for utter in result.get('utterances', []):
-    print(f"[{utter['start_time']}ms -> {utter['end_time']}ms] {utter['text']}")</code></pre>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <!-- Sticky Preview Bar & Bottom Nav Cluster (Mobile only) -->
-    <div class="fixed bottom-0 w-full z-50 md:hidden flex flex-col">
-        <!-- Waveform Preview Bar -->
-        <div id="mobile-preview-bar" class="bg-surface-container-low/95 backdrop-blur-xl border-t border-outline-variant/20 px-4 py-3 flex items-center justify-between transition-all duration-300 translate-y-full hidden">
-            <div class="flex items-center gap-3">
-                <div class="waveform-container flex items-end gap-[2px] h-4" id="mobile-waveform-visualizer">
-                    <div class="waveform-bar"></div>
-                    <div class="waveform-bar"></div>
-                    <div class="waveform-bar"></div>
-                    <div class="waveform-bar"></div>
-                    <div class="waveform-bar"></div>
-                </div>
-                <div class="flex flex-col">
-                    <span id="mobile-preview-voice-name" class="text-xs font-bold text-primary">Thanh Vy đang đọc...</span>
-                    <span id="mobile-preview-time-display" class="text-[10px] text-on-surface-variant">00:00</span>
-                </div>
+for u in response.json().get('utterances', []):
+    print(f"[{u['start_time']}ms] {u['text']}")</code></pre>
             </div>
-            <div class="flex gap-4">
-                <button id="btn-mobile-play-pause" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined text-lg">play_arrow</span>
-                </button>
-                <button id="btn-mobile-close" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined text-lg">close</span>
-                </button>
-            </div>
+          </div>
         </div>
-        
-        <!-- BottomNavBar -->
-        <nav class="bg-glass-bg backdrop-blur-xl border-t border-outline-variant/30 rounded-t-xl flex justify-around items-center h-20 px-2 pb-2">
-            <!-- TTS Tab -->
-            <button class="mobile-nav-item flex flex-col items-center justify-center text-primary font-bold scale-105 transition-all duration-300" data-tab="tts">
-                <span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">record_voice_over</span>
-                <span class="font-label-sm text-[10px]">TTS</span>
-            </button>
-            <!-- STT Tab -->
-            <button class="mobile-nav-item flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-300" data-tab="stt">
-                <span class="material-symbols-outlined mb-1">mic</span>
-                <span class="font-label-sm text-[10px]">STT</span>
-            </button>
-            <!-- Docs Tab -->
-            <button class="mobile-nav-item flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-300" data-tab="docs">
-                <span class="material-symbols-outlined mb-1">description</span>
-                <span class="font-label-sm text-[10px]">Docs</span>
-            </button>
-        </nav>
+      </section><!-- /panel-docs -->
+
+    </div><!-- /max-w -->
+  </main>
+
+  <!-- ═══ MOBILE PREVIEW BAR ═══════════════════════════════════════════════════ -->
+  <div id="mobile-preview-bar" class="fixed bottom-16 left-0 w-full z-50 md:hidden bg-surface-container-low/95 backdrop-blur-xl border-t border-outline-variant/20 px-4 py-2.5 flex items-center justify-between transition-all duration-300 translate-y-full hidden">
+    <div class="flex items-center gap-3">
+      <div class="waveform-container h-4" id="mobile-waveform-visualizer">
+        <div class="waveform-bar"></div><div class="waveform-bar"></div>
+        <div class="waveform-bar"></div><div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+      </div>
+      <div>
+        <p id="mobile-preview-voice-name" class="text-xs font-bold text-primary leading-tight">—</p>
+        <p id="mobile-preview-time-display" class="text-[10px] text-on-surface-variant">00:00</p>
+      </div>
     </div>
+    <div class="flex gap-3">
+      <button id="btn-mobile-play-pause" class="text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined text-[20px]">play_arrow</span>
+      </button>
+      <button id="btn-mobile-close" class="text-on-surface-variant hover:text-error transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+  </div>
 
-    <script src="static/script.js"></script>
+  <!-- ═══ MOBILE BOTTOM NAV ═════════════════════════════════════════════════════ -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 md:hidden bg-surface-dim/95 backdrop-blur-xl border-t border-outline-variant/25 flex justify-around items-center h-16 px-2">
+    <button class="mobile-nav-item flex flex-col items-center justify-center text-primary font-bold scale-105 transition-all duration-200" data-tab="tts">
+      <span class="material-symbols-outlined text-[22px] mb-0.5" style="font-variation-settings:'FILL' 1;">record_voice_over</span>
+      <span class="font-label-sm text-[9px]">TTS</span>
+    </button>
+    <button class="mobile-nav-item flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200" data-tab="stt">
+      <span class="material-symbols-outlined text-[22px] mb-0.5">mic</span>
+      <span class="font-label-sm text-[9px]">STT</span>
+    </button>
+    <button class="mobile-nav-item flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200" data-tab="docs">
+      <span class="material-symbols-outlined text-[22px] mb-0.5">description</span>
+      <span class="font-label-sm text-[9px]">Docs</span>
+    </button>
+  </nav>
+
+  <script src="static/script.js"></script>
 </body>
 </html>

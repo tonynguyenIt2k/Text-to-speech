@@ -4,3 +4,4 @@ __pycache__/
 .DS_Store
 temp_device.json
 test_audio_temp.mp3
+audio_output/
