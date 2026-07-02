@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const historyTbody = document.getElementById("history-tbody");
 
     let ttsHistory = [];
+    const highlightOverlay = document.getElementById("tts-text-highlight-overlay");
+    let highlightWords = [];
 
     // Custom API Base URL settings
     let apiBaseUrl = localStorage.getItem("api_base_url");
@@ -339,6 +341,19 @@ document.addEventListener("DOMContentLoaded", () => {
         previewVoiceName.textContent = `PREVIEWING: ${item.voice_name}`;
         mobilePreviewVoiceName.textContent = `${item.voice_name} đang đọc...`;
 
+        // Update textarea value and char count
+        if (ttsText) {
+            ttsText.value = item.text;
+            const charCountElement = document.getElementById("tts-char-count");
+            if (charCountElement) charCountElement.textContent = `${item.text.length} ký tự`;
+        }
+
+        // Prepare and show highlight overlay
+        if (highlightOverlay) {
+            prepareTextHighlight(item.text);
+            highlightOverlay.classList.remove("hidden");
+        }
+
         // Display Output widgets (desktop card and mobile bottom player bar)
         ttsOutputCard.classList.remove("hidden");
         mobilePreviewBar.classList.remove("hidden");
@@ -388,6 +403,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load initial history
     loadHistory();
+
+    // ─── Karaoke Text Highlight Logic ─────────────────────────────────────────
+    function prepareTextHighlight(text) {
+        if (!highlightOverlay) return;
+        highlightOverlay.innerHTML = "";
+        
+        // Split text into words (tokens) while preserving spaces and newlines
+        const tokens = text.split(/(\s+)/);
+        highlightWords = [];
+        
+        tokens.forEach((token) => {
+            if (token === "") return;
+            
+            if (token.trim() === "") {
+                // Whitespace/newline token
+                const wsNode = document.createElement("span");
+                wsNode.innerHTML = token.replace(/\n/g, "<br>");
+                highlightOverlay.appendChild(wsNode);
+            } else {
+                // Word token
+                const span = document.createElement("span");
+                span.className = "highlight-word transition-all duration-200 text-on-surface/40 inline-block";
+                span.textContent = token;
+                highlightOverlay.appendChild(span);
+                highlightWords.push(span);
+            }
+        });
+    }
+
+    function updateTextHighlight() {
+        if (!highlightOverlay || highlightOverlay.classList.contains("hidden") || highlightWords.length === 0) return;
+        
+        const duration = ttsAudio.duration;
+        const current = ttsAudio.currentTime;
+        if (!duration || isNaN(duration)) return;
+        
+        const progress = current / duration;
+        const activeIndex = Math.floor(progress * highlightWords.length);
+        
+        highlightWords.forEach((span, idx) => {
+            if (idx < activeIndex) {
+                // Already read
+                span.className = "highlight-word text-primary font-medium opacity-90 inline-block";
+            } else if (idx === activeIndex) {
+                // Currently reading
+                span.className = "highlight-word text-primary font-extrabold bg-primary/15 px-1 py-0.5 rounded scale-105 inline-block shadow-sm shadow-primary/10 transition-transform duration-100";
+                
+                // Auto-scroll to center the active word inside the overlay container
+                span.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            } else {
+                // Not read yet
+                span.className = "highlight-word text-on-surface/40 inline-block";
+            }
+        });
+    }
+
+    // Hide highlight overlay when the user edits the textarea
+    ttsText.addEventListener("focus", () => {
+        if (highlightOverlay) highlightOverlay.classList.add("hidden");
+    });
+    ttsText.addEventListener("input", () => {
+        if (highlightOverlay) highlightOverlay.classList.add("hidden");
+    });
 
     // Tab Navigation switching (Desktop sidebar)
     navItems.forEach(item => {
@@ -646,6 +724,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 mobilePreviewBar.classList.remove("translate-y-full");
             }, 50);
             
+            // Prepare and show highlight overlay
+            if (highlightOverlay) {
+                prepareTextHighlight(text);
+                highlightOverlay.classList.remove("hidden");
+            }
+
             // Play immediately
             ttsAudio.play();
 
@@ -701,6 +785,15 @@ document.addEventListener("DOMContentLoaded", () => {
         mobileWaveformVisualizer.classList.add("playing");
         btnPlayPause.querySelector("span").textContent = "pause";
         btnMobilePlayPause.querySelector("span").textContent = "pause";
+        
+        // Ensure highlight overlay is visible when playing
+        if (highlightOverlay && highlightOverlay.classList.contains("hidden")) {
+            const text = ttsText.value.trim();
+            if (text) {
+                prepareTextHighlight(text);
+                highlightOverlay.classList.remove("hidden");
+            }
+        }
     });
 
     ttsAudio.addEventListener("pause", () => {
@@ -718,6 +811,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const finalTime = formatAudioTime(ttsAudio.duration);
         previewTimeDisplay.textContent = finalTime + " / " + finalTime;
         mobilePreviewTimeDisplay.textContent = finalTime;
+        
+        // Hide highlight overlay
+        if (highlightOverlay) highlightOverlay.classList.add("hidden");
     });
 
     ttsAudio.addEventListener("timeupdate", () => {
@@ -725,6 +821,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const duration = ttsAudio.duration ? formatAudioTime(ttsAudio.duration) : "00:00";
         previewTimeDisplay.textContent = `${current} / ${duration}`;
         mobilePreviewTimeDisplay.textContent = `${current} / ${duration}`;
+        
+        // Update highlight overlay word active states
+        updateTextHighlight();
     });
 
     function formatAudioTime(secs) {
