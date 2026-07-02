@@ -76,6 +76,175 @@ def generate_fresh_device() -> dict:
     device["tdid"] = dev_id
     return device
 
+# ─── English to Vietnamese Phonetic mapping for mixed language ───────────────
+ENGLISH_TO_VI_PHONETIC = {
+    # Brand/Tech Names
+    "facebook": "phây-búc",
+    "google": "gu-gồ",
+    "youtube": "u-túp",
+    "youtube channel": "kênh u-túp",
+    "tiktok": "tíc-tốc",
+    "github": "gít-hắp",
+    "huggingface": "hắc-ghinh phây-xơ",
+    "hugging face": "hắc-ghinh phây-xơ",
+    "chatgpt": "chát-gi-pi-ti",
+    "gpt": "gi-pi-ti",
+    "openai": "ô-pen-ai",
+    "microsoft": "mai-crô-sóp",
+    "apple": "áp-pồ",
+    "iphone": "ai-phôn",
+    "ipad": "ai-pát",
+    "macbook": "mác-búc",
+    "android": "an-droi",
+    "samsung": "sam-sung",
+    "capcut": "cáp-cắt",
+    
+    # Common tech words
+    "ai": "ai",
+    "api": "a-pi-ai",
+    "server": "sơ-vơ",
+    "client": "clai-ân",
+    "web": "quép",
+    "website": "quép-sai",
+    "app": "áp",
+    "application": "áp-li-kê-sơn",
+    "code": "cốt",
+    "coder": "cố-đơ",
+    "developer": "đê-ve-lơ-pơ",
+    "dev": "đép",
+    "designer": "đi-zai-nơ",
+    "test": "tét",
+    "tester": "tét-tơ",
+    "user": "u-sơ",
+    "admin": "át-min",
+    "file": "phai",
+    "folder": "phôn-đơ",
+    "data": "đa-ta",
+    "database": "đa-ta-bây",
+    "internet": "in-tơ-nét",
+    "network": "nét-uốc",
+    "online": "on-lai",
+    "offline": "off-lai",
+    "link": "linh",
+    "url": "u-rờ-lờ",
+    "click": "clích",
+    "check": "chếch",
+    "update": "úp-đét",
+    "upgrade": "úp-grết",
+    "download": "đao-loát",
+    "upload": "úp-loát",
+    "setup": "sét-úp",
+    "install": "in-sto",
+    "run": "răn",
+    "start": "stát",
+    "stop": "stóp",
+    "cancel": "can-xơ",
+    "error": "e-rơ",
+    "bug": "bắc",
+    "debug": "đi-bắc",
+    "log": "lốc",
+    "login": "lăng-in",
+    "logout": "lăng-ao",
+    "register": "re-gít-tơ",
+    "password": "pát-uốc",
+    "username": "u-sơ-nêm",
+    "email": "i-meo",
+    
+    # Audio/Video words
+    "voice": "voi-xơ",
+    "studio": "su-ti-đi-ô",
+    "text to speech": "tếch tu spít",
+    "speech to text": "spít tu tếch",
+    "tts": "tê-tê-ét",
+    "stt": "ét-tê-tê",
+    "audio": "ao-đi-ô",
+    "video": "vi-đê-ô",
+    "clip": "clíp",
+    "stream": "sờ-trim",
+    "livestream": "lai-sờ-trim",
+    "live": "lai",
+    "play": "plây",
+    "pause": "po",
+    "mute": "miu",
+    "volume": "vô-lum",
+    "sound": "sao-đơ",
+    "karaoke": "ca-ra-ô-kê",
+    
+    # Common conversational English words in Vietnamese
+    "like": "lai",
+    "love": "lớp",
+    "share": "se",
+    "subscribe": "súp-sờ-crai",
+    "comment": "com-mèn",
+    "post": "pốt",
+    "blog": "blốc",
+    "hot": "hót",
+    "cool": "cu",
+    "ok": "ô-kê",
+    "okay": "ô-kê",
+    "yes": "dét",
+    "no": "nô",
+    "hi": "hai",
+    "hello": "hê-lô",
+    "bye": "bai",
+    "goodbye": "gút-bai",
+    "thanks": "thenh-kiu",
+    "thank you": "thenh-kiu",
+    "sorry": "so-ri",
+    "please": "pli",
+    "team": "tim",
+    "project": "prô-jếch",
+    "task": "tát",
+    "deadline": "đét-lai",
+    "meeting": "mit-tinh",
+    "group": "grúp",
+    "zoom": "zum",
+    "call": "con",
+    "chat": "chát",
+    "free": "phờ-ri",
+    "sale": "seo",
+    "shop": "sóp",
+    "store": "sto",
+    "brand": "bờ-ren",
+    "marketing": "mác-két-tinh",
+    "pr": "pi-a",
+    "event": "i-ven",
+    "view": "viu",
+    "follow": "phô-lô",
+    "game": "ghêm",
+    "gamer": "ghê-mơ",
+    "live game": "lai ghêm",
+    "music": "miu-zích",
+    "song": "soong",
+    "singer": "sinh-ơ",
+    "fan": "phan",
+    "idol": "ai-đồ",
+    "show": "sô",
+    "review": "ri-viu",
+    "vlog": "vờ-lốc",
+    "vlogger": "vờ-lốc-gơ",
+    "camera": "ca-me-ra",
+    "smartwatch": "sờ-mát-uốc",
+    "laptop": "láp-tóp",
+    "pc": "pi-xi",
+    "wifi": "quai-phai",
+    "bluetooth": "blu-tút",
+    "sim": "sim",
+    "card": "cát",
+    "key": "ki",
+}
+
+def convert_english_to_vi_phonetic(text: str) -> str:
+    # Sort keys by length descending to match longer phrases first
+    sorted_words = sorted(ENGLISH_TO_VI_PHONETIC.keys(), key=len, reverse=True)
+    
+    for eng_word in sorted_words:
+        vi_equivalent = ENGLISH_TO_VI_PHONETIC[eng_word]
+        # Match complete word boundaries case-insensitively
+        pattern = re.compile(r'\b' + re.escape(eng_word) + r'\b', re.IGNORECASE)
+        text = pattern.sub(vi_equivalent, text)
+    return text
+
 # ─── Text Chunking for Long TTS ──────────────────────────────────────────────
 # CapCut TTS has a ~280 character limit per request.
 # Split long texts at sentence boundaries to stay within the limit.
@@ -294,8 +463,24 @@ def text_to_speech(payload: TTSRequest, request: Request):
             voice = "BV074_streaming"
             resource_id = "7102355709945188865"
 
+    # Preprocess text if selected voice is Vietnamese to optimize English pronunciations
+    text_to_synthesize = payload.text.strip()
+    is_vietnamese_voice = False
+    
+    if voice in voice_map:
+        is_vietnamese_voice = "vi" in voice_map[voice]["lang"].lower()
+    else:
+        # Default voice (BV074_streaming) is Vietnamese
+        is_vietnamese_voice = True
+        
+    if is_vietnamese_voice:
+        original_text = text_to_synthesize
+        text_to_synthesize = convert_english_to_vi_phonetic(text_to_synthesize)
+        if text_to_synthesize != original_text:
+            logger.info(f"Substituted English words for Vietnamese voice: '{original_text[:40]}' -> '{text_to_synthesize[:40]}'")
+
     # Split text into chunks if it exceeds the character limit
-    chunks = split_text_into_chunks(payload.text.strip())
+    chunks = split_text_into_chunks(text_to_synthesize)
     total_chunks = len(chunks)
     logger.info(f"TTS request: {len(payload.text)} chars → {total_chunks} chunk(s), voice='{voice}', rate={payload.rate}")
     
