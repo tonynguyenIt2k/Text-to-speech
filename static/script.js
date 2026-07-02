@@ -18,6 +18,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Custom API Base URL settings
     let apiBaseUrl = localStorage.getItem("api_base_url");
+
+    // ─── Toast Notification System ──────────────────────────────────────────
+    function showToast(message, type = "info", duration = 3000) {
+        const container = document.getElementById("toast-container");
+        if (!container) return;
+
+        const toast = document.createElement("div");
+        toast.className = `toast-item toast-${type}`;
+
+        let icon = "info";
+        let iconColor = "text-blue-500";
+        if (type === "success") {
+            icon = "check_circle";
+            iconColor = "text-green-500";
+        } else if (type === "error") {
+            icon = "error";
+            iconColor = "text-red-500";
+        } else if (type === "warning") {
+            icon = "warning";
+            iconColor = "text-amber-500";
+        }
+
+        toast.innerHTML = `
+            <span class="material-symbols-outlined ${iconColor} shrink-0">${icon}</span>
+            <div class="text-sm font-body-md text-on-surface font-semibold flex-grow">${message}</div>
+        `;
+
+        container.appendChild(toast);
+
+        // Auto remove with fade-out
+        setTimeout(() => {
+            toast.classList.add("toast-fade-out");
+            toast.addEventListener("animationend", () => {
+                toast.remove();
+            });
+            setTimeout(() => toast.remove(), 400); // safety fallback
+        }, duration);
+    }
     if (apiBaseUrl === null) {
         const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
         apiBaseUrl = isLocal ? "" : "https://tony2k-ai-voice-studio.hf.space";
@@ -173,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("api_base_url", val);
             apiBaseUrl = val;
             if (apiBaseInput) apiBaseInput.value = val;
-            alert(`Đã lưu cấu hình API Server: ${val || "Mặc định (Relative)"}`);
+            showToast(`Đã lưu cấu hình API Server: ${val || "Mặc định (Relative)"}`, "success");
             checkServerStatus();
         });
     }
@@ -540,11 +578,11 @@ document.addEventListener("DOMContentLoaded", () => {
     btnGenerateTts.addEventListener("click", async () => {
         const text = ttsText.value.trim();
         if (!text) {
-            alert("Vui lòng nhập văn bản cần đọc!");
+            showToast("Vui lòng nhập văn bản cần đọc!", "warning");
             return;
         }
         if (!selectedVoice) {
-            alert("Vui lòng chọn một giọng đọc từ danh sách!");
+            showToast("Vui lòng chọn một giọng đọc từ danh sách!", "warning");
             return;
         }
 
@@ -621,7 +659,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (err) {
             console.error(err);
-            alert(`Lỗi: ${err.message}`);
+            showToast(`Lỗi: ${err.message}`, "error");
         } finally {
             // Restore generating buttons
             btnGenerateTts.disabled = false;
