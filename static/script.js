@@ -492,10 +492,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const isSelected = selectedVoice && selectedVoice.voice_type === v.voice_type;
             
             const card = document.createElement("div");
-            card.className = `p-4 rounded-2xl flex items-center gap-4 cursor-pointer transition-all group ${
+            card.className = `p-4 rounded-2xl flex items-center gap-4 cursor-pointer transition-all group border-2 ${
                 isSelected 
-                ? "bg-primary-container/10 border border-primary/30" 
-                : "bg-surface-variant/20 border border-transparent hover:border-outline-variant/50"
+                ? "bg-primary/5 dark:bg-primary-container/10 border-primary/40 dark:border-primary/30" 
+                : "bg-surface-variant/20 border-transparent hover:border-outline-variant/30"
             }`;
             
             const avatarUrl = getAvatarForVoice(v, index);
@@ -523,7 +523,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Select default voice on initial load
             if (!selectedVoice && v.voice_type === "BV074_streaming") {
                 selectedVoice = v;
-                card.className = "p-4 rounded-2xl bg-primary-container/10 border border-primary/30 flex items-center gap-4 cursor-pointer hover:bg-primary-container/20 transition-all group";
+                card.className = "p-4 rounded-2xl bg-primary/5 dark:bg-primary-container/10 border-2 border-primary/40 dark:border-primary/30 flex items-center gap-4 cursor-pointer transition-all group";
             }
 
             voiceListContainer.appendChild(card);
