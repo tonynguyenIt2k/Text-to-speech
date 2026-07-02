@@ -232,3 +232,9 @@ body {
   transition: background 0.15s ease;
 }
 .history-row:hover td { background: rgba(var(--color-surface-variant), 0.35); }
+
+/* ─── Sun/Moon Toggle Icons ─────────────────────────────────────────────────── */
+#theme-toggle-checkbox:not(:checked) ~ div .light-icon { display: block; }
+#theme-toggle-checkbox:not(:checked) ~ div .dark-icon { display: none; }
+#theme-toggle-checkbox:checked ~ div .light-icon { display: none; }
+#theme-toggle-checkbox:checked ~ div .dark-icon { display: block; }
