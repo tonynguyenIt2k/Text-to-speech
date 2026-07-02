@@ -131,10 +131,11 @@
     <!-- Theme toggle (mobile) -->
     <label class="relative inline-flex items-center cursor-pointer">
       <input id="theme-toggle-checkbox" class="sr-only peer" type="checkbox"/>
-      <div class="w-11 h-6 bg-surface-variant/50 glass-panel rounded-full peer transition-all duration-300 peer-checked:bg-primary/30 border border-outline-variant/30">
-        <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 peer-checked:translate-x-5 flex items-center justify-center">
-          <span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings:'FILL' 1;">dark_mode</span>
-        </div>
+      <!-- Track -->
+      <div class="w-11 h-6 bg-surface-variant/50 glass-panel rounded-full peer transition-all duration-300 peer-checked:bg-primary/30 border border-outline-variant/30"></div>
+      <!-- Knob -->
+      <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 peer-checked:translate-x-5 flex items-center justify-center pointer-events-none">
+        <span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings:'FILL' 1;">dark_mode</span>
       </div>
     </label>
   </header>
@@ -146,10 +147,11 @@
     <div class="hidden md:flex fixed right-5 top-4 z-50 items-center">
       <label class="relative inline-flex items-center cursor-pointer">
         <input id="theme-toggle-checkbox" class="sr-only peer" type="checkbox"/>
-        <div class="w-11 h-6 bg-surface-variant/50 glass-panel rounded-full peer transition-all duration-300 peer-checked:bg-primary/30 border border-outline-variant/30">
-          <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 peer-checked:translate-x-5 flex items-center justify-center">
-            <span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings:'FILL' 1;">dark_mode</span>
-          </div>
+        <!-- Track -->
+        <div class="w-11 h-6 bg-surface-variant/50 glass-panel rounded-full peer transition-all duration-300 peer-checked:bg-primary/30 border border-outline-variant/30"></div>
+        <!-- Knob -->
+        <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 peer-checked:translate-x-5 flex items-center justify-center pointer-events-none">
+          <span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings:'FILL' 1;">dark_mode</span>
         </div>
       </label>
     </div>
