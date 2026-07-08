@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0533"/>
+      <stop offset="100%" style="stop-color:#3d1a7a"/>
+    </linearGradient>
+    <linearGradient id="wave1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#a855f7"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="wave2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Background with rounded rect -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  <!-- Glow overlay -->
+  <radialGradient id="glow-bg" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:0.3"/>
+    <stop offset="100%" style="stop-color:#1a0533;stop-opacity:0"/>
+  </radialGradient>
+  <rect width="512" height="512" rx="110" fill="url(#glow-bg)"/>
+  <!-- Waveform bars - left side (purple) -->
+  <g filter="url(#glow)" fill="url(#wave1)" opacity="0.9">
+    <rect x="80" y="216" width="28" height="80" rx="14"/>
+    <rect x="124" y="176" width="28" height="160" rx="14"/>
+    <rect x="168" y="136" width="28" height="240" rx="14"/>
+    <rect x="212" y="176" width="28" height="160" rx="14"/>
+  </g>
+  <!-- Microphone center -->
+  <circle cx="256" cy="256" r="70" fill="#7c3aed" opacity="0.3"/>
+  <circle cx="256" cy="256" r="70" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.5"/>
+  <!-- Mic icon -->
+  <g fill="none" stroke="#e9d5ff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="224" y="198" width="64" height="90" rx="32" fill="#c084fc" stroke="none"/>
+    <line x1="256" y1="296" x2="256" y2="334"/>
+    <line x1="222" y1="334" x2="290" y2="334"/>
+    <path d="M210 272 C210 310 302 310 302 272" fill="none" stroke="#e9d5ff" stroke-width="14"/>
+  </g>
+  <!-- Waveform bars - right side (cyan) -->
+  <g filter="url(#glow)" fill="url(#wave2)" opacity="0.9">
+    <rect x="272" y="176" width="28" height="160" rx="14"/>
+    <rect x="316" y="136" width="28" height="240" rx="14"/>
+    <rect x="360" y="176" width="28" height="160" rx="14"/>
+    <rect x="404" y="216" width="28" height="80" rx="14"/>
+  </g>
+</svg>
